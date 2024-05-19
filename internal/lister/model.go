@@ -9,7 +9,7 @@ type Package struct {
 	Dir            string   // directory containing package sources
 	ImportPath     string   // import path of package in dir
 	ImportComment  string   // path in import comment on package statement
-	Name           string   // package name
+	Name           string   // package Name
 	Doc            string   // package documentation string
 	Target         string   // install path
 	Shlib          string   // the shared library that contains this package (only set when -linkshared)
@@ -92,7 +92,7 @@ type Context struct {
 	BuildTags     []string // build constraints to match in //go:build lines
 	ToolTags      []string // toolchain-specific build constraints
 	ReleaseTags   []string // releases the current release is compatible with
-	InstallSuffix string   // suffix to use in the name of the install dir
+	InstallSuffix string   // suffix to use in the Name of the install dir
 }
 
 type Module struct {
