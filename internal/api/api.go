@@ -3,6 +3,7 @@ package api
 import (
 	"encoding/json"
 	"net/http"
+	"net/url"
 	"strconv"
 
 	"github.com/gorilla/mux"
@@ -25,7 +26,13 @@ func getHello(w http.ResponseWriter, r *http.Request) {
 }
 
 func getGraph(w http.ResponseWriter, r *http.Request) {
-	path := r.URL.Query().Get("path")
+	pathEnc := r.URL.Query().Get("path")
+	path, err := url.QueryUnescape(pathEnc)
+	if err != nil {
+		http.Error(w, "Failed to decode 'path'", http.StatusBadRequest)
+		return
+	}
+
 	if path == "" {
 		http.Error(w, "Missing 'path' parameter", http.StatusBadRequest)
 		return
@@ -33,6 +40,7 @@ func getGraph(w http.ResponseWriter, r *http.Request) {
 
 	err, g := lister.GetGraph(path)
 	if err != nil {
+		http.Error(w, "Failed to make a graph", http.StatusBadRequest)
 		return
 	}
 
@@ -48,7 +56,7 @@ func getGraph(w http.ResponseWriter, r *http.Request) {
 
 	newEdgeId := func() string {
 		countEdge++
-		return "edge" + strconv.Itoa(countNode)
+		return "edge" + strconv.Itoa(countEdge)
 	}
 
 	outGraph := model.Graph{
