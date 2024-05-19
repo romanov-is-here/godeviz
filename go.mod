@@ -2,7 +2,10 @@ module github.com/romanov-is-here/godeviz
 
 go 1.22.3
 
-require github.com/goccy/go-graphviz v0.1.2
+require (
+	github.com/goccy/go-graphviz v0.1.2
+	github.com/gorilla/mux v1.8.1
+)
 
 require (
 	github.com/fogleman/gg v1.3.0 // indirect
