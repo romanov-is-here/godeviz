@@ -22,7 +22,7 @@ func Graphviz(gr *lister.DepGraph) error {
 		g.Close()
 	}()
 
-	refd := getRefdFromHome(gr)
+	refd := GetRefdFromHome(gr)
 
 	nodes := make(map[string]*cgraph.Node)
 
@@ -65,7 +65,8 @@ func Graphviz(gr *lister.DepGraph) error {
 	return nil
 }
 
-func getRefdFromHome(gr *lister.DepGraph) map[string]bool {
+// TODO another pack
+func GetRefdFromHome(gr *lister.DepGraph) map[string]bool {
 	refd := make(map[string]bool)
 
 	for _, v := range gr.Packs {
