@@ -73,6 +73,7 @@ func getGraph(w http.ResponseWriter, r *http.Request) {
 		node := model.Node{
 			Name:   pck.Name(),
 			IsHome: pck.IsHome,
+			Color:  getColor(pck),
 		}
 		id := newNodeId()
 		nodeIds[pck.Id()] = id
@@ -93,9 +94,14 @@ func getGraph(w http.ResponseWriter, r *http.Request) {
 			if !ok {
 				continue
 			}
+			destPack, ok := g.Packs[imp]
+			if !ok {
+				continue
+			}
 			edge := model.Edge{
 				Source: srcNodeId,
 				Target: destPackId,
+				Color:  getColor(destPack),
 			}
 			edgeId := newEdgeId()
 			outGraph.Edges[edgeId] = &edge
@@ -115,4 +121,20 @@ func getGraph(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Serialization Error", http.StatusInternalServerError)
 		return
 	}
+}
+
+func getColor(p *lister.PackageInfo) string {
+	if p.IsHome {
+		return "lightskyblue"
+	}
+	if p.IsPlatform {
+		return "purple"
+	}
+	if p.IsStandard {
+		return "green"
+	}
+	if p.IsOuter {
+		return "red"
+	}
+	return "lightgrey"
 }

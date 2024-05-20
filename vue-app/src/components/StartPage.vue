@@ -56,7 +56,7 @@ export default {
 
     ///////////////////
 
-    const nodeSize = 80
+    const nodeSize = 20
 
     const configs = vNG.defineConfigs({
       view: {
@@ -64,13 +64,20 @@ export default {
         onBeforeInitialDisplay: () => layout("TB"),
       },
       node: {
-        normal: { radius: nodeSize / 2 },
-        label: { direction: "center", color: "#fff" },
+        normal: {
+          radius: nodeSize / 2,
+          color: node => node.color,
+        },
+        hover: {
+          color: node => node.color,
+        },
+        label: { direction: "south", color: "#000000", directionAutoAdjustment: true, fontSize: 14 },
       },
       edge: {
+        type: "curve",
         normal: {
-          color: "#aaa",
-          width: 3,
+          color: edge => edge.color,
+          width: 2,
         },
         margin: 4,
         marker: {
@@ -94,9 +101,9 @@ export default {
       // Set an object for the graph label
       g.setGraph({
         rankdir: direction,
-        nodesep: nodeSize * 2,
-        edgesep: nodeSize,
-        ranksep: nodeSize * 2,
+        nodesep: nodeSize * 5,
+        edgesep: nodeSize * 2,
+        ranksep: nodeSize * 5,
       })
       // Default to assigning a new object as a label for each new edge.
       g.setDefaultEdgeLabel(() => ({}))
