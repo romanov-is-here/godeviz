@@ -131,7 +131,7 @@ func getColor(p *lister.PackageInfo) string {
 		return "purple"
 	}
 	if p.IsStandard {
-		return "green"
+		return "#0bd63e"
 	}
 	if p.IsOuter {
 		return "red"
