@@ -79,6 +79,9 @@ export default {
           color: edge => edge.color,
           width: 2,
         },
+        hover: {
+          color: edge => edge.color,
+        },
         margin: 4,
         marker: {
           target: {
@@ -98,11 +101,33 @@ export default {
     const tooltipOpacity = ref(0) // 0 or 1
     const tooltipPos = ref({ left: "0px", top: "0px" })
 
+    const edgetip = ref()
+    const edgetipOpacity = ref(0) // 0 or 1
+    const edgetipPos = ref({ left: "0px", top: "0px" })
+    const EDGE_MARGIN_TOP = 2
+    const targetEdgeId = ref("")
+
     const targetNodePos = computed(() => {
       const nodePos = layouts.nodes[targetNodeId.value]
       return nodePos || {x: 0, y: 0}
     })
 
+    const edgeCenterPos = computed(() => {
+      const edge = data.edges[targetEdgeId.value]
+      if (!edge) {
+        console.log("edge not found")
+        return { x: 0, y: 0 }
+      }
+
+      console.log("edge found")
+      const sourceNode = data.edges[targetEdgeId.value].source
+      const targetNode = data.edges[targetEdgeId.value].target
+      return {
+        x: (layouts.nodes[sourceNode].x + layouts.nodes[targetNode].x) / 2,
+        y: (layouts.nodes[sourceNode].y + layouts.nodes[targetNode].y) / 2,
+      }
+    })
+    /////////// tooltip
     watch(
         () => [targetNodePos.value, tooltipOpacity.value],
         () => {
@@ -118,6 +143,29 @@ export default {
         },
         { deep: true }
     )
+    ////////////// edgetip
+    watch(
+        () => [edgeCenterPos.value, edgetipOpacity.value],
+        () => {
+          if (!graph.value || !edgetip.value) {
+            console.log("watch graph or edgetip not found")
+            return { x: 0, y: 0 }
+          }
+          if (!targetEdgeId.value) {
+            console.log("targetEdgeId no value")
+            return { x: 0, y: 0 }
+          }
+
+          // translate coordinates: SVG -> DOM
+          const domPoint = graph.value.translateFromSvgToDomCoordinates(edgeCenterPos.value)
+          // calculates top-left position of the tooltip.
+          edgetipPos.value = {
+            left: domPoint.x - edgetip.value.offsetWidth / 2 + "px",
+            top: domPoint.y - EDGE_MARGIN_TOP - edgetip.value.offsetHeight - 10 + "px",
+          }
+        },
+        { deep: true }
+    )
 
     const eventHandlers = {
       "node:pointerover": ({ node }) => {
@@ -127,6 +175,14 @@ export default {
       "node:pointerout": ({node}) => {
         targetNodeId.value = node
         tooltipOpacity.value = 0 // hide
+      },
+      "edge:pointerover": ({ edge }) => {
+        targetEdgeId.value = edge ?? ""
+        edgetipOpacity.value = 1 // show
+      },
+      "edge:pointerout": ({edge}) => {
+        targetEdgeId.value = edge ?? ""
+        edgetipOpacity.value = 0 // hide
       },
     }
 
@@ -187,7 +243,12 @@ export default {
       tooltipOpacity,
       targetNodeId,
       graph,
-      tooltip
+      tooltip,
+      edgetip,
+      targetEdgeId,
+      edgetipPos,
+      edgetipOpacity,
+      edgeCenterPos
     };
   }
 }
@@ -240,6 +301,17 @@ export default {
         In deps: {{data.nodes[targetNodeId]?.inDeps ?? 0}}
       </div>
     </div>
+
+    <div
+        ref="edgetip"
+        class="edgetip"
+        :style="{ ...edgetipPos, opacity: edgetipOpacity }"
+    >
+      <div>
+        {{data.nodes[data.edges[targetEdgeId]?.source]?.name ?? " ??"}} ->
+        {{data.nodes[data.edges[targetEdgeId]?.target]?.name ?? " ??"}}
+      </div>
+    </div>
   </div>
 </template>
 
@@ -278,5 +350,23 @@ export default {
   transition: opacity 0.2s linear;
   pointer-events: none;
   text-align: left;
+}
+.edgetip {
+  top: 0;
+  left: 0;
+  opacity: 0;
+  position: absolute;
+  padding: 5px;
+  width: auto;
+  height: auto;
+  display: grid;
+  place-content: center;
+  text-align: center;
+  font-size: 12px;
+  background-color: #fff0bd;
+  border: 1px solid #ffb950;
+  box-shadow: 2px 2px 2px #aaa;
+  transition: opacity 0.2s linear;
+  pointer-events: none;
 }
 </style>
