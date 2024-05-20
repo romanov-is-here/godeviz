@@ -1,6 +1,5 @@
 <script>
-import {ref} from "vue";
-import {reactive} from "vue";
+import {ref, watch, computed, reactive} from "vue";
 import {VNetworkGraph} from "v-network-graph";
 import * as vNG from "v-network-graph"
 import "v-network-graph/lib/style.css"
@@ -54,9 +53,10 @@ export default {
       isLoaderVisible.value = false
     }
 
-    ///////////////////
+    /////////////////// configs
 
     const nodeSize = 20
+    const NODE_RADIUS = nodeSize / 2
 
     const configs = vNG.defineConfigs({
       view: {
@@ -65,7 +65,7 @@ export default {
       },
       node: {
         normal: {
-          radius: nodeSize / 2,
+          radius: NODE_RADIUS,
           color: node => node.color,
         },
         hover: {
@@ -89,6 +89,48 @@ export default {
         },
       },
     })
+
+    ////////////// tooltips
+
+    const graph = ref()
+    const tooltip = ref()
+    const targetNodeId = ref("")
+    const tooltipOpacity = ref(0) // 0 or 1
+    const tooltipPos = ref({ left: "0px", top: "0px" })
+
+    const targetNodePos = computed(() => {
+      const nodePos = layouts.nodes[targetNodeId.value]
+      return nodePos || {x: 0, y: 0}
+    })
+
+    watch(
+        () => [targetNodePos.value, tooltipOpacity.value],
+        () => {
+          if (!graph.value || !tooltip.value) return
+
+          // translate coordinates: SVG -> DOM
+          const domPoint = graph.value.translateFromSvgToDomCoordinates(targetNodePos.value)
+          // calculates top-left position of the tooltip.
+          tooltipPos.value = {
+            left: domPoint.x - tooltip.value.offsetWidth / 2 + "px",
+            top: domPoint.y - NODE_RADIUS - tooltip.value.offsetHeight - 10 + "px",
+          }
+        },
+        { deep: true }
+    )
+
+    const eventHandlers = {
+      "node:pointerover": ({ node }) => {
+        targetNodeId.value = node
+        tooltipOpacity.value = 1 // show
+      },
+      "node:pointerout": ({node}) => {
+        targetNodeId.value = node
+        tooltipOpacity.value = 0 // hide
+      },
+    }
+
+    ////////////// layout
 
     function layout(direction) {
       if (Object.keys(data.nodes).length <= 1 || Object.keys(data.edges).length == 0) {
@@ -139,7 +181,13 @@ export default {
       reset,
       data,
       layouts,
-      configs
+      configs,
+      eventHandlers,
+      tooltipPos,
+      tooltipOpacity,
+      targetNodeId,
+      graph,
+      tooltip
     };
   }
 }
@@ -169,14 +217,29 @@ export default {
     </div>
   </div>
 
-  <div v-if="isGraphVisible" class="full-page">
+  <div v-if="isGraphVisible" class="tooltip-wrapper full-page">
     <VNetworkGraph
         class="graph"
+        ref="graph"
         :nodes="data.nodes"
         :edges="data.edges"
         :layouts="layouts"
         :configs="configs"
+        :event-handlers="eventHandlers"
     />
+    <div
+        ref="tooltip"
+        class="tooltip"
+        :style="{ ...tooltipPos, opacity: tooltipOpacity }"
+    >
+      <div>
+        {{ data.nodes[targetNodeId]?.name ?? "" }}
+        <br>
+        In: {{data.nodes[targetNodeId]?.inDeps ?? 0}}
+        <br>
+        Out: {{data.nodes[targetNodeId]?.outDeps ?? 0}}
+      </div>
+    </div>
   </div>
 </template>
 
@@ -193,5 +256,27 @@ export default {
   width: 100%;
   border: 3px solid gray; /* Толщина 3 пикселя, серый цвет */
   border-radius: 10px; /* Скругленные края */
+  margin: 10px
+}
+.tooltip-wrapper {
+  position: relative;
+}
+.tooltip {
+  top: 0;
+  left: 0;
+  opacity: 0;
+  position: absolute;
+  padding: 5px;
+  width: auto;
+  height: auto;
+  display: grid;
+  place-content: center;
+  font-size: 12px;
+  background-color: #fff0bd;
+  border: 1px solid #ffb950;
+  box-shadow: 2px 2px 2px #aaa;
+  transition: opacity 0.2s linear;
+  pointer-events: none;
+  text-align: left;
 }
 </style>

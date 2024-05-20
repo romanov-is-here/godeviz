@@ -80,6 +80,19 @@ func getGraph(w http.ResponseWriter, r *http.Request) {
 		outGraph.Nodes[id] = &node
 	}
 
+	for _, h := range g.Hits().Hits {
+		nodeId, ok := nodeIds[h.Id()]
+		if !ok {
+			continue
+		}
+		node, ok := outGraph.Nodes[nodeId]
+		if !ok {
+			continue
+		}
+		node.InDeps = h.Count()
+		node.OutDeps = h.ImportsCount()
+	}
+
 	// Collect edges
 	for _, srcPack := range g.Packs {
 		if !srcPack.IsHome {

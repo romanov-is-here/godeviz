@@ -13,8 +13,16 @@ func (h *Hit) Count() int {
 	return len(h.from)
 }
 
+func (h *Hit) ImportsCount() int {
+	return len(h.pack.Imports())
+}
+
 func (h *Hit) Name() string {
 	return h.pack.Name()
+}
+
+func (h *Hit) Id() string {
+	return h.pack.Id()
 }
 
 func (h *Hit) add(from string) {

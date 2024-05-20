@@ -1,9 +1,11 @@
 package model
 
 type Node struct {
-	Name   string `json:"name"`
-	IsHome bool   `json:"isHome"`
-	Color  string `json:"color,omitempty"`
+	Name    string `json:"name"`
+	IsHome  bool   `json:"isHome"`
+	Color   string `json:"color,omitempty"`
+	InDeps  int    `json:"inDeps"`
+	OutDeps int    `json:"outDeps"`
 }
 
 type Edge struct {
