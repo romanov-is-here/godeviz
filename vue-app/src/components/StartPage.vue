@@ -235,9 +235,9 @@ export default {
       <div>
         {{ data.nodes[targetNodeId]?.name ?? "" }}
         <br>
-        In: {{data.nodes[targetNodeId]?.inDeps ?? 0}}
+        Imports: {{data.nodes[targetNodeId]?.outDeps ?? 0}}
         <br>
-        Out: {{data.nodes[targetNodeId]?.outDeps ?? 0}}
+        In deps: {{data.nodes[targetNodeId]?.inDeps ?? 0}}
       </div>
     </div>
   </div>

@@ -80,8 +80,12 @@ func getGraph(w http.ResponseWriter, r *http.Request) {
 		outGraph.Nodes[id] = &node
 	}
 
-	for _, h := range g.Hits().Hits {
-		nodeId, ok := nodeIds[h.Id()]
+	// Collect hits
+	for _, pck := range g.Packs {
+		if _, ok := refd[pck.Id()]; !ok || !pck.IsHome {
+			continue
+		}
+		nodeId, ok := nodeIds[pck.Id()]
 		if !ok {
 			continue
 		}
@@ -89,8 +93,23 @@ func getGraph(w http.ResponseWriter, r *http.Request) {
 		if !ok {
 			continue
 		}
-		node.InDeps = h.Count()
-		node.OutDeps = h.ImportsCount()
+		for _, imp := range pck.Imports() {
+			if _, ok := refd[imp]; !ok {
+				continue
+			}
+			node.OutDeps++
+			depId, ok := nodeIds[imp]
+			if !ok {
+				continue
+			}
+			depNode, ok := outGraph.Nodes[depId]
+			if !ok {
+				continue
+			}
+			depNode.InDeps++
+		}
+		//node.InDeps = pck.Count()
+		//node.OutDeps = pck.ImportsCount()
 	}
 
 	// Collect edges
@@ -138,7 +157,7 @@ func getGraph(w http.ResponseWriter, r *http.Request) {
 
 func getColor(p *lister.PackageInfo) string {
 	if p.IsHome {
-		return "lightskyblue"
+		return "purple"
 	}
 	if p.IsPlatform {
 		return "purple"
@@ -147,7 +166,7 @@ func getColor(p *lister.PackageInfo) string {
 		return "#0bd63e"
 	}
 	if p.IsOuter {
-		return "red"
+		return "lightskyblue"
 	}
 	return "lightgrey"
 }
