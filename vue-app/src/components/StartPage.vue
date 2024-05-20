@@ -65,8 +65,9 @@ export default {
       },
       node: {
         normal: {
-          radius: NODE_RADIUS,
+          radius: node => node.size ?? NODE_RADIUS,
           color: node => node.color,
+
         },
         hover: {
           color: node => node.color,
@@ -167,6 +168,8 @@ export default {
         { deep: true }
     )
 
+    const oldColorSource = ref('')
+    const oldColorTarget = ref('')
     const eventHandlers = {
       "node:pointerover": ({ node }) => {
         targetNodeId.value = node
@@ -178,11 +181,23 @@ export default {
       },
       "edge:pointerover": ({ edge }) => {
         targetEdgeId.value = edge ?? ""
+        const ed = data.edges[edge]
+        oldColorSource.value = data.nodes[ed.source].color
+        data.nodes[ed.source].color = "red"
+        data.nodes[ed.source].size = NODE_RADIUS * 2
+        oldColorTarget.value = data.nodes[ed.target].color
+        data.nodes[ed.target].color = "red"
+        data.nodes[ed.target].size = NODE_RADIUS * 2
         edgetipOpacity.value = 1 // show
       },
       "edge:pointerout": ({edge}) => {
         targetEdgeId.value = edge ?? ""
         edgetipOpacity.value = 0 // hide
+        const ed = data.edges[edge]
+        data.nodes[ed.source].color = oldColorSource.value
+        delete data.nodes[ed.source].size
+        data.nodes[ed.target].color = oldColorTarget.value
+        delete data.nodes[ed.target].size
       },
     }
 
