@@ -1,6 +1,6 @@
 # godeviz
 
-Dependecy visualizer for go projects
+Dependency visualizer for go projects
 
 ⚠️ Prototype code ahead. You've been warned ⚠️
 
