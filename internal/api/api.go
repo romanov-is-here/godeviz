@@ -64,7 +64,7 @@ func getGraph(w http.ResponseWriter, r *http.Request) {
 		Edges: make(map[string]*model.Edge),
 	}
 
-	// TODO govnocode below
+	// TODO questionable code below
 	// Collect nodes
 	for _, pck := range g.Packs {
 		if _, ok := refd[pck.Id()]; !ok {
