@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"os/exec"
 	"regexp"
+
+	"github.com/romanov-is-here/godeviz/internal/graph/gomodel"
 )
 
 type CommandLister struct {
@@ -13,12 +15,12 @@ type CommandLister struct {
 }
 
 // List returns the struct unmarshalled from `go list --json` call to be used for example as an input of project formatter
-func (c *CommandLister) List() ([]Package, error) {
+func (c *CommandLister) List() ([]gomodel.Package, error) {
 	return listPackages(c.run, c.Path)
 }
 
 // Modules returns the struct unmarshalled from `go list -m --json`
-func (c *CommandLister) Modules() ([]Module, error) {
+func (c *CommandLister) Modules() ([]gomodel.Module, error) {
 	return listModules(c.run)
 }
 
@@ -55,8 +57,8 @@ func (c *CommandLister) run(out *bytes.Buffer, arg ...string) error {
 	return nil
 }
 
-func listPackages(run runFunc, path string) ([]Package, error) {
-	var x []Package
+func listPackages(run runFunc, path string) ([]gomodel.Package, error) {
+	var x []gomodel.Package
 	//data, err := execute(run, "list", "--json=ImportPath,Imports,Standard", "--deps", "all", path)
 	//data, err := execute(run, "list", "--json=ImportPath,Imports,Standard", "--deps", path)
 	data, err := execute(run, "list", "--json=ImportPath,Imports,Standard", "--deps", "./...")
@@ -70,8 +72,8 @@ func listPackages(run runFunc, path string) ([]Package, error) {
 	return x, nil
 }
 
-func listModules(run runFunc) ([]Module, error) {
-	var x []Module
+func listModules(run runFunc) ([]gomodel.Module, error) {
+	var x []gomodel.Module
 	data, err := execute(run, "list", "-m", "--json")
 	if err != nil {
 		return nil, err

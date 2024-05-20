@@ -3,8 +3,8 @@ package main
 import (
 	"fmt"
 
-	"github.com/romanov-is-here/godeviz/internal/lister"
-	"github.com/romanov-is-here/godeviz/internal/painter"
+	"github.com/romanov-is-here/godeviz/internal/graph/lister"
+	"github.com/romanov-is-here/godeviz/internal/graph/painter"
 )
 
 func main() {

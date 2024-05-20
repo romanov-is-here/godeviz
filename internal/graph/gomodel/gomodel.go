@@ -1,5 +1,5 @@
 // Struct is this file are taken from "go help list" output "as is"
-package lister
+package gomodel
 
 import (
 	"time"

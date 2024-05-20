@@ -1,4 +1,4 @@
-package lister
+package depgraph
 
 type Hit struct {
 	pack *PackageInfo

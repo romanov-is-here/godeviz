@@ -1,4 +1,4 @@
-package model
+package dto
 
 type Node struct {
 	Name    string `json:"name"`

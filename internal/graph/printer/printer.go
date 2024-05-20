@@ -3,23 +3,23 @@ package printer
 import (
 	"fmt"
 
-	"github.com/romanov-is-here/godeviz/internal/lister"
+	"github.com/romanov-is-here/godeviz/internal/graph/depgraph"
 )
 
-func Graph(g *lister.DepGraph) {
+func Graph(g *depgraph.DepGraph) {
 	for _, pi := range g.Packs {
 		if !pi.IsHome {
 			continue
 		}
 		fmt.Println(pi.Name())
-		for _, i := range pi.Imports() {
-			f, ok := g.Packs[i]
+		for _, imp := range pi.Imports() {
+			f, ok := g.Packs[imp.Id()]
 			if f.IsStandard || f.IsOuter {
 				//continue
 			}
 			fmt.Print("\t")
 			if !ok {
-				fmt.Println("⚠️⚠️" + i)
+				fmt.Println("⚠️⚠️" + imp.Id())
 				continue
 			}
 			fmt.Println(f.Name())
@@ -27,7 +27,7 @@ func Graph(g *lister.DepGraph) {
 	}
 }
 
-func Hits(g *lister.DepGraph) {
+func Hits(g *depgraph.DepGraph) {
 	hsorted := g.Hits()
 	for _, h := range hsorted.Hits {
 		if h.Count() < 5 {

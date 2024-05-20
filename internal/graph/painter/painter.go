@@ -6,10 +6,10 @@ import (
 	"github.com/goccy/go-graphviz"
 	"github.com/goccy/go-graphviz/cgraph"
 
-	"github.com/romanov-is-here/godeviz/internal/lister"
+	depgraph2 "github.com/romanov-is-here/godeviz/internal/graph/depgraph"
 )
 
-func Graphviz(gr *lister.DepGraph) error {
+func Graphviz(gr *depgraph2.DepGraph) error {
 	g := graphviz.New()
 	graph, err := g.Graph()
 	if err != nil {
@@ -43,7 +43,7 @@ func Graphviz(gr *lister.DepGraph) error {
 		}
 		srcNode, _ := nodes[srcPack.Id()]
 		for _, imp := range srcPack.Imports() {
-			destPack, ok := gr.Packs[imp]
+			destPack, ok := gr.Packs[imp.Id()]
 			if !ok {
 				continue // TODO is it possible?
 			}
@@ -65,33 +65,33 @@ func Graphviz(gr *lister.DepGraph) error {
 	return nil
 }
 
-// TODO another pack
-func GetRefdFromHome(gr *lister.DepGraph) map[string]bool {
+// TODO it's filter job
+func GetRefdFromHome(gr *depgraph2.DepGraph) map[string]bool {
 	refd := make(map[string]bool)
 
 	for _, v := range gr.Packs {
 		if v.IsHome {
 			refd[v.Id()] = true
 			for _, imp := range v.Imports() {
-				refd[imp] = true
+				refd[imp.Id()] = true
 			}
 		}
 	}
 	return refd
 }
 
-func getColor(p *lister.PackageInfo) string {
+func getColor(p *depgraph2.PackageInfo) string {
 	if p.IsHome {
-		return "black"
+		return "brown"
 	}
 	if p.IsPlatform {
-		return "green"
+		return "purple"
 	}
 	if p.IsStandard {
 		return "green"
 	}
 	if p.IsOuter {
-		return "red"
+		return "lightblue"
 	}
 	return "lightgrey"
 }
