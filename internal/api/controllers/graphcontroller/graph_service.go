@@ -1,8 +1,6 @@
 package graphcontroller
 
 import (
-	"strconv"
-
 	"github.com/romanov-is-here/godeviz/internal/api/controllers/graphcontroller/dto"
 	"github.com/romanov-is-here/godeviz/internal/graph/lister"
 	"github.com/romanov-is-here/godeviz/internal/graph/painter"
@@ -17,27 +15,13 @@ func (s *graphService) getGraph(path string) (*dto.Graph, error) {
 		return nil, err
 	}
 
-	countEdge := 0
-	countNode := 0
-	nodeIds := make(map[string]string)
 	refd := painter.GetRefdFromHome(g)
-
-	newNodeId := func() string {
-		countNode++
-		return "node" + strconv.Itoa(countNode)
-	}
-
-	newEdgeId := func() string {
-		countEdge++
-		return "edge" + strconv.Itoa(countEdge)
-	}
 
 	outGraph := dto.Graph{
 		Nodes: make(map[string]*dto.Node),
 		Edges: make(map[string]*dto.Edge),
 	}
 
-	// TODO questionable code below
 	// Collect nodes
 	for _, pck := range g.Packs {
 		if _, ok := refd[pck.Id()]; !ok {
@@ -48,9 +32,7 @@ func (s *graphService) getGraph(path string) (*dto.Graph, error) {
 			IsHome: pck.IsHome,
 			Color:  getColor(pck),
 		}
-		id := newNodeId()
-		nodeIds[pck.Id()] = id
-		outGraph.Nodes[id] = &node
+		outGraph.Nodes[pck.Id()] = &node
 	}
 
 	// Collect hits
@@ -58,11 +40,7 @@ func (s *graphService) getGraph(path string) (*dto.Graph, error) {
 		if _, ok := refd[pck.Id()]; !ok || !pck.IsHome {
 			continue
 		}
-		nodeId, ok := nodeIds[pck.Id()]
-		if !ok {
-			continue
-		}
-		node, ok := outGraph.Nodes[nodeId]
+		node, ok := outGraph.Nodes[pck.Id()]
 		if !ok {
 			continue
 		}
@@ -71,18 +49,12 @@ func (s *graphService) getGraph(path string) (*dto.Graph, error) {
 				continue
 			}
 			node.OutDeps++
-			depId, ok := nodeIds[imp.Id()]
-			if !ok {
-				continue
-			}
-			depNode, ok := outGraph.Nodes[depId]
+			depNode, ok := outGraph.Nodes[imp.Id()]
 			if !ok {
 				continue
 			}
 			depNode.InDeps++
 		}
-		//node.InDeps = pck.Count()
-		//node.OutDeps = pck.ImportsCount()
 	}
 
 	// Collect edges
@@ -90,25 +62,17 @@ func (s *graphService) getGraph(path string) (*dto.Graph, error) {
 		if !srcPack.IsHome {
 			continue
 		}
-		srcNodeId, ok := nodeIds[srcPack.Id()]
-		if !ok {
-			continue
-		}
 		for _, imp := range srcPack.Imports() {
-			destPackId, ok := nodeIds[imp.Id()]
-			if !ok {
-				continue
-			}
 			destPack, ok := g.Packs[imp.Id()]
 			if !ok {
 				continue
 			}
 			edge := dto.Edge{
-				Source: srcNodeId,
-				Target: destPackId,
+				Source: srcPack.Id(),
+				Target: imp.Id(),
 				Color:  getColor(destPack),
 			}
-			edgeId := newEdgeId()
+			edgeId := srcPack.Id() + "->" + imp.Id()
 			outGraph.Edges[edgeId] = &edge
 		}
 	}
