@@ -6,10 +6,10 @@ import (
 	"github.com/goccy/go-graphviz"
 	"github.com/goccy/go-graphviz/cgraph"
 
-	depgraph2 "github.com/romanov-is-here/godeviz/internal/graph/depgraph"
+	"github.com/romanov-is-here/godeviz/internal/graph/depgraph"
 )
 
-func Graphviz(gr *depgraph2.DepGraph) error {
+func Graphviz(gr *depgraph.DepGraph) error {
 	g := graphviz.New()
 	graph, err := g.Graph()
 	if err != nil {
@@ -22,14 +22,9 @@ func Graphviz(gr *depgraph2.DepGraph) error {
 		g.Close()
 	}()
 
-	refd := GetRefdFromHome(gr)
-
 	nodes := make(map[string]*cgraph.Node)
 
 	for k, pck := range gr.Packs {
-		if _, ok := refd[pck.Id]; !ok {
-			continue
-		}
 		node, errn := graph.CreateNode(pck.Id)
 		node.SetColor(getColor(pck))
 		if errn != nil {
@@ -38,11 +33,7 @@ func Graphviz(gr *depgraph2.DepGraph) error {
 		nodes[k] = node
 	}
 
-	// TODO filter
 	for _, srcPack := range gr.Packs {
-		if !srcPack.IsHome {
-			continue
-		}
 		srcNode, _ := nodes[srcPack.Id]
 		for _, imp := range srcPack.Imports {
 			destPack, ok := gr.Packs[imp.Id]
@@ -67,22 +58,7 @@ func Graphviz(gr *depgraph2.DepGraph) error {
 	return nil
 }
 
-// TODO it's filter job
-func GetRefdFromHome(gr *depgraph2.DepGraph) map[string]bool {
-	refd := make(map[string]bool)
-
-	for _, v := range gr.Packs {
-		if v.IsHome {
-			refd[v.Id] = true
-			for _, imp := range v.Imports {
-				refd[imp.Id] = true
-			}
-		}
-	}
-	return refd
-}
-
-func getColor(p *depgraph2.Package) string {
+func getColor(p *depgraph.Package) string {
 	if p.IsHome {
 		return "brown"
 	}

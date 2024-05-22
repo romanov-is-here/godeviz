@@ -8,6 +8,8 @@ type Package struct {
 	IsStandard bool
 	Id         string
 	Imports    []*Import
+	FanIn      int
+	FanOut     int
 }
 
 type DepGraph struct {
@@ -16,4 +18,22 @@ type DepGraph struct {
 
 type Import struct {
 	Id string
+}
+
+type Filter struct {
+	ShowHome         bool
+	ShowStandard     bool
+	ShowPlatform     bool
+	ShowOuter        bool
+	ShowNonHomeRoots bool
+}
+
+func NewDefaultFilter() *Filter {
+	return &Filter{
+		ShowHome:         true,
+		ShowStandard:     false,
+		ShowPlatform:     true,
+		ShowOuter:        true,
+		ShowNonHomeRoots: false,
+	}
 }

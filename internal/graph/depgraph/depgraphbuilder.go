@@ -13,26 +13,14 @@ const (
 type Builder struct {
 	localPrefix string
 	packs       map[string]*packageInfo
-}
-
-type packageInfo struct {
-	isPlatform bool
-	isHome     bool
-	isOuter    bool
-	isStandard bool
-	id         string
-	imports    []*packageImport
-	builder    *Builder
-}
-
-type packageImport struct {
-	id string
+	filter      *Filter
 }
 
 func NewBuilder(localPrefix string) *Builder {
 	return &Builder{
 		localPrefix: localPrefix,
 		packs:       make(map[string]*packageInfo),
+		filter:      NewDefaultFilter(),
 	}
 }
 
@@ -59,9 +47,16 @@ func (b *Builder) Add(p gomodel.Package) {
 	b.packs[pack.id] = pack
 }
 
+func (b *Builder) SetFilter(filter *Filter) {
+	if filter == nil {
+		filter = NewDefaultFilter()
+	}
+	b.filter = filter
+}
+
 func (b *Builder) Build() *DepGraph {
-	// TODO filter
-	// TODO hits
+	b.applyFilter()
+	b.collectHits()
 	g := &DepGraph{
 		Packs: make(map[string]*Package),
 	}
@@ -73,19 +68,44 @@ func (b *Builder) Build() *DepGraph {
 	return g
 }
 
-func newPackage(v *packageInfo) *Package {
+func (b *Builder) collectHits() {
+	for _, pck := range b.packs {
+		pck.fanOut = len(pck.imports)
+		for _, imp := range pck.imports {
+			if destPack, ok := b.packs[imp.id]; ok {
+				destPack.fanOut++
+			}
+		}
+	}
+}
+
+type packageInfo struct {
+	isPlatform bool
+	isHome     bool
+	isOuter    bool
+	isStandard bool
+	id         string
+	imports    []*packageImport
+	builder    *Builder
+	fanIn      int
+	fanOut     int
+}
+
+func newPackage(p *packageInfo) *Package {
 	imports := make([]*Import, 0)
-	for _, imp := range v.imports {
+	for _, imp := range p.imports {
 		imports = append(imports, &Import{Id: imp.id})
 	}
 	return &Package{
-		Name:       v.Name(),
-		IsPlatform: v.isPlatform,
-		IsHome:     v.isHome,
-		IsOuter:    v.isOuter,
-		IsStandard: v.isStandard,
-		Id:         v.id,
+		Name:       p.Name(),
+		IsPlatform: p.isPlatform,
+		IsHome:     p.isHome,
+		IsOuter:    p.isOuter,
+		IsStandard: p.isStandard,
+		Id:         p.id,
 		Imports:    imports,
+		FanIn:      p.fanIn,
+		FanOut:     p.fanOut,
 	}
 }
 
@@ -103,4 +123,8 @@ func (p *packageInfo) Name() string {
 		return "🌐" + p.id
 	}
 	return "⚠️" + p.id // this is unexpected
+}
+
+type packageImport struct {
+	id string
 }
