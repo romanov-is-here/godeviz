@@ -27,27 +27,29 @@ func Graphviz(gr *depgraph2.DepGraph) error {
 	nodes := make(map[string]*cgraph.Node)
 
 	for k, pck := range gr.Packs {
-		if _, ok := refd[pck.Id()]; !ok {
+		if _, ok := refd[pck.Id]; !ok {
 			continue
 		}
-		node, errn := graph.CreateNode(pck.Id())
+		node, errn := graph.CreateNode(pck.Id)
 		node.SetColor(getColor(pck))
 		if errn != nil {
 			return errn
 		}
 		nodes[k] = node
 	}
+
+	// TODO filter
 	for _, srcPack := range gr.Packs {
 		if !srcPack.IsHome {
 			continue
 		}
-		srcNode, _ := nodes[srcPack.Id()]
-		for _, imp := range srcPack.Imports() {
-			destPack, ok := gr.Packs[imp.Id()]
+		srcNode, _ := nodes[srcPack.Id]
+		for _, imp := range srcPack.Imports {
+			destPack, ok := gr.Packs[imp.Id]
 			if !ok {
 				continue // TODO is it possible?
 			}
-			destNode, ok := nodes[destPack.Id()]
+			destNode, ok := nodes[destPack.Id]
 			if !ok {
 				continue // TODO is it possible?
 			}
@@ -71,16 +73,16 @@ func GetRefdFromHome(gr *depgraph2.DepGraph) map[string]bool {
 
 	for _, v := range gr.Packs {
 		if v.IsHome {
-			refd[v.Id()] = true
-			for _, imp := range v.Imports() {
-				refd[imp.Id()] = true
+			refd[v.Id] = true
+			for _, imp := range v.Imports {
+				refd[imp.Id] = true
 			}
 		}
 	}
 	return refd
 }
 
-func getColor(p *depgraph2.PackageInfo) string {
+func getColor(p *depgraph2.Package) string {
 	if p.IsHome {
 		return "brown"
 	}

@@ -24,32 +24,32 @@ func (s *graphService) getGraph(path string) (*dto.Graph, error) {
 
 	// Collect nodes
 	for _, pck := range g.Packs {
-		if _, ok := refd[pck.Id()]; !ok {
+		if _, ok := refd[pck.Id]; !ok {
 			continue
 		}
 		node := dto.Node{
-			Name:   pck.Name(),
+			Name:   pck.Name,
 			IsHome: pck.IsHome,
 			Color:  getColor(pck),
 		}
-		outGraph.Nodes[pck.Id()] = &node
+		outGraph.Nodes[pck.Id] = &node
 	}
 
 	// Collect hits
 	for _, pck := range g.Packs {
-		if _, ok := refd[pck.Id()]; !ok || !pck.IsHome {
+		if _, ok := refd[pck.Id]; !ok || !pck.IsHome {
 			continue
 		}
-		node, ok := outGraph.Nodes[pck.Id()]
+		node, ok := outGraph.Nodes[pck.Id]
 		if !ok {
 			continue
 		}
-		for _, imp := range pck.Imports() {
-			if _, ok := refd[imp.Id()]; !ok {
+		for _, imp := range pck.Imports {
+			if _, ok := refd[imp.Id]; !ok {
 				continue
 			}
 			node.OutDeps++
-			depNode, ok := outGraph.Nodes[imp.Id()]
+			depNode, ok := outGraph.Nodes[imp.Id]
 			if !ok {
 				continue
 			}
@@ -62,17 +62,17 @@ func (s *graphService) getGraph(path string) (*dto.Graph, error) {
 		if !srcPack.IsHome {
 			continue
 		}
-		for _, imp := range srcPack.Imports() {
-			destPack, ok := g.Packs[imp.Id()]
+		for _, imp := range srcPack.Imports {
+			destPack, ok := g.Packs[imp.Id]
 			if !ok {
 				continue
 			}
 			edge := dto.Edge{
-				Source: srcPack.Id(),
-				Target: imp.Id(),
+				Source: srcPack.Id,
+				Target: imp.Id,
 				Color:  getColor(destPack),
 			}
-			edgeId := srcPack.Id() + "->" + imp.Id()
+			edgeId := srcPack.Id + "->" + imp.Id
 			outGraph.Edges[edgeId] = &edge
 		}
 	}

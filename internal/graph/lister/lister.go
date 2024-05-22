@@ -18,11 +18,11 @@ func GetGraph(path string) (error, *depgraph.DepGraph) {
 		return err, nil
 	}
 
-	g := depgraph.NewDepGraph(mpath)
+	b := depgraph.NewBuilder(mpath)
 
 	for _, p := range list {
-		g.Add(p)
+		b.Add(p)
 	}
 
-	return nil, g
+	return nil, b.Build()
 }

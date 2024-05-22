@@ -47,7 +47,7 @@ func (c *graphController) GetGraph(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func getColor(p *depgraph.PackageInfo) string {
+func getColor(p *depgraph.Package) string {
 	if p.IsHome {
 		return "brown"
 	}
