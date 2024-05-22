@@ -1,9 +1,9 @@
 package depgraph
 
 type Import struct {
-	text string
+	id string
 }
 
 func (i *Import) Id() string {
-	return i.text
+	return i.id
 }

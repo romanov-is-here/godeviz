@@ -20,18 +20,18 @@ func (p *PackageInfo) Imports() []*Import {
 
 func (p *PackageInfo) Name() string {
 	if p.IsHome {
-		return "🏠" + strings.TrimPrefix(p.Id(), p.depGraph.localPrefix)
+		return "🏠" + strings.TrimPrefix(p.id, p.depGraph.localPrefix)
 	}
 	if p.IsPlatform {
-		return "🛠" + strings.TrimPrefix(p.Id(), platformPrefix)
+		return "🛠" + strings.TrimPrefix(p.id, platformPrefix)
 	}
 	if p.IsStandard {
-		return "📦" + p.Id()
+		return "📦" + p.id
 	}
 	if p.IsOuter {
-		return "🌐" + p.Id()
+		return "🌐" + p.id
 	}
-	return "⚠️" + p.Id()
+	return "⚠️" + p.id
 }
 
 func (p *PackageInfo) Id() string {

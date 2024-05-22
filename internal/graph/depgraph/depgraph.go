@@ -31,7 +31,7 @@ func (g *DepGraph) Add(p gomodel.Package) {
 
 	imports := make([]*Import, 0)
 	for _, i := range p.Imports {
-		imports = append(imports, &Import{text: i})
+		imports = append(imports, &Import{id: i})
 	}
 
 	pack := &PackageInfo{
