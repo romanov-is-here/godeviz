@@ -4,14 +4,15 @@ import (
 	"strconv"
 
 	"github.com/romanov-is-here/godeviz/internal/api/controllers/graphcontroller/dto"
+	"github.com/romanov-is-here/godeviz/internal/graph/depgraph"
 	"github.com/romanov-is-here/godeviz/internal/graph/lister"
 )
 
 type graphService struct{}
 
-func (s *graphService) getGraph(path string) (*dto.Graph, error) {
+func (s *graphService) getGraph(path string, filter *depgraph.Filter) (*dto.Graph, error) {
 
-	err, g := lister.GetGraph(path)
+	err, g := lister.GetGraph(path, filter)
 	if err != nil {
 		return nil, err
 	}

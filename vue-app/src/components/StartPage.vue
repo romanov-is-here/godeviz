@@ -5,10 +5,12 @@ import * as vNG from "v-network-graph"
 import "v-network-graph/lib/style.css"
 import axios from 'axios';
 import dagre from "dagre"
+import FilterBar from "@/components/FilterBar.vue";
 
 export default {
   name: "StartPage",
   components: {
+    FilterBar,
     VNetworkGraph
   },
   setup: function () {
@@ -34,11 +36,18 @@ export default {
       isInputsVisible.value = true
     };
 
+    const onFilterChanged = function (){
+      showGraph()
+    }
+
     const fetchGraph = async () => {
       try {
         const response = await axios.get('/api/graph', {
           params: {
-            path: encodeURIComponent(path.value)
+            path: encodeURIComponent(path.value),
+            show_standard : filter.showStandard,
+            show_platform : filter.showPlatform,
+            show_outer : filter.showOuter,
           }
         });
 
@@ -116,11 +125,9 @@ export default {
     const edgeCenterPos = computed(() => {
       const edge = data.edges[targetEdgeId.value]
       if (!edge) {
-        console.log("edge not found")
         return { x: 0, y: 0 }
       }
 
-      console.log("edge found")
       const sourceNode = data.edges[targetEdgeId.value].source
       const targetNode = data.edges[targetEdgeId.value].target
       return {
@@ -149,11 +156,9 @@ export default {
         () => [edgeCenterPos.value, edgetipOpacity.value],
         () => {
           if (!graph.value || !edgetip.value) {
-            console.log("watch graph or edgetip not found")
             return { x: 0, y: 0 }
           }
           if (!targetEdgeId.value) {
-            console.log("targetEdgeId no value")
             return { x: 0, y: 0 }
           }
 
@@ -243,6 +248,12 @@ export default {
       })
     }
 
+    const filter = reactive({
+      showStandard: false,
+      showPlatform: true,
+      showOuter: true
+    })
+
     return {
       path,
       isInputsVisible,
@@ -263,7 +274,9 @@ export default {
       targetEdgeId,
       edgetipPos,
       edgetipOpacity,
-      edgeCenterPos
+      edgeCenterPos,
+      filter,
+      onFilterChanged
     };
   }
 }
@@ -271,6 +284,12 @@ export default {
 </script>
 
 <template>
+  <div v-if="isGraphVisible">
+    <FilterBar
+        :filter = "filter"
+        @filter-changed = "onFilterChanged"
+    />
+  </div>
   <div v-if="isInputsVisible" class="centered-div">
     <div class="alert alert-success" role="alert">
       Enter a path to the package:
@@ -279,11 +298,11 @@ export default {
     <input v-model="path" type="text" class="form-control" placeholder="Your path here" aria-label="Path">
 
     <button type="button" class="btn btn-primary show-btn" @click="showGraph">Show graph</button>
-
-    <h3>{{path}}</h3>
   </div>
 
   <div v-if="!isInputsVisible && !isLoaderVisible">
+    <h4>{{path}}</h4>
+    <br>
     <button type="button" class="btn btn-primary" @click="reset">Reset</button>
   </div>
 

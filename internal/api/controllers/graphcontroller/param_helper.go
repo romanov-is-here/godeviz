@@ -3,11 +3,14 @@ package graphcontroller
 import (
 	"net/http"
 	"net/url"
+	"strconv"
+
+	"github.com/romanov-is-here/godeviz/internal/graph/depgraph"
 )
 
 // TODO refac ?
 
-func fromQuery(w http.ResponseWriter, r *http.Request, name string, required bool) (string, bool) {
+func strFromQuery(w http.ResponseWriter, r *http.Request, name string, required bool) (string, bool) {
 	pathEnc := r.URL.Query().Get(name)
 	path, err := url.QueryUnescape(pathEnc)
 	if err != nil {
@@ -21,4 +24,41 @@ func fromQuery(w http.ResponseWriter, r *http.Request, name string, required boo
 	}
 
 	return path, true
+}
+
+func boolFromQuery(w http.ResponseWriter, r *http.Request, name string, required bool) (bool, bool) {
+	fromQuery := r.URL.Query().Get(name)
+
+	if fromQuery == "" {
+		if required {
+			http.Error(w, "Missing required'"+name+"' query parameter", http.StatusBadRequest)
+		}
+		return false, false
+	}
+
+	value, err := strconv.ParseBool(fromQuery)
+	if err != nil {
+		http.Error(w, "Failed to parse bool param '"+name+"'", http.StatusBadRequest)
+		return false, false
+	}
+
+	return value, true
+}
+
+func getFilter(w http.ResponseWriter, r *http.Request) (*depgraph.Filter, bool) {
+	filter := depgraph.NewDefaultFilter()
+
+	if showStandard, ok := boolFromQuery(w, r, "show_standard", false); ok {
+		filter.ShowStandard = showStandard
+	}
+
+	if showPlatform, ok := boolFromQuery(w, r, "show_platform", false); ok {
+		filter.ShowPlatform = showPlatform
+	}
+
+	if showOuter, ok := boolFromQuery(w, r, "show_outer", false); ok {
+		filter.ShowOuter = showOuter
+	}
+
+	return filter, true
 }

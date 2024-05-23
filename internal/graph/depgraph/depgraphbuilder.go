@@ -27,7 +27,7 @@ func NewBuilder(localPrefix string) *Builder {
 func (b *Builder) Add(p gomodel.Package) {
 	isPlatform := strings.HasPrefix(p.ImportPath, platformPrefix)
 	isHome := strings.HasPrefix(p.ImportPath, b.localPrefix)
-	isOuter := !isPlatform && !isHome
+	isOuter := !p.Standard && !isPlatform && !isHome
 
 	imports := make([]*packageImport, 0)
 	for _, i := range p.Imports {

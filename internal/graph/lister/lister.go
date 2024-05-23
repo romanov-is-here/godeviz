@@ -4,7 +4,7 @@ import (
 	"github.com/romanov-is-here/godeviz/internal/graph/depgraph"
 )
 
-func GetGraph(path string) (error, *depgraph.DepGraph) {
+func GetGraph(path string, filter *depgraph.Filter) (error, *depgraph.DepGraph) {
 	ls := &CommandLister{
 		Path: path,
 	}
@@ -23,6 +23,8 @@ func GetGraph(path string) (error, *depgraph.DepGraph) {
 	for _, p := range list {
 		b.Add(p)
 	}
+
+	b.SetFilter(filter)
 
 	return nil, b.Build()
 }

@@ -20,12 +20,17 @@ func SetupGraphController(r *mux.Router) {
 }
 
 func (c *graphController) GetGraph(w http.ResponseWriter, r *http.Request) {
-	path, ok := fromQuery(w, r, "path", true)
+	path, ok := strFromQuery(w, r, "path", true)
 	if !ok {
 		return
 	}
 
-	outGraph, err := c.service.getGraph(path)
+	filter, ok := getFilter(w, r)
+	if !ok {
+		return
+	}
+
+	outGraph, err := c.service.getGraph(path, filter)
 
 	if err != nil {
 		http.Error(w, "Failed to make a graph", http.StatusBadRequest)
