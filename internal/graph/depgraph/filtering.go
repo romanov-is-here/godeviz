@@ -3,18 +3,48 @@ package depgraph
 func (b *Builder) applyFilter() {
 	var importsFromHome map[string]bool
 
-	if !b.filter.ShowNonHomeRoots {
+	if b.filter.OnlyHomeRoots {
 		importsFromHome = b.getImportsFromHome()
 	}
 
+	// Filtering packs
 	for k, p := range b.packs {
-		if !b.filter.passFilter(p, importsFromHome) {
+		if !b.passPackageFilter(p, importsFromHome) {
 			delete(b.packs, k)
+		}
+	}
+
+	// Filtering imports
+	for _, p := range b.packs {
+		filtered := make([]*packageImport, 0)
+		for _, imp := range p.imports {
+			if b.passImportFilter(p, imp) {
+				filtered = append(filtered, imp)
+			}
+
+			p.imports = filtered
 		}
 	}
 }
 
-func (f *Filter) passFilter(p *packageInfo, importsFromHome map[string]bool) bool {
+func (b *Builder) passImportFilter(p *packageInfo, imp *packageImport) bool {
+	f := b.filter
+
+	_, ok := b.packs[imp.id]
+	if !ok {
+		return false
+	}
+
+	if f.OnlyHomeRoots && !p.isHome {
+		return false
+	}
+
+	return true
+}
+
+func (b *Builder) passPackageFilter(p *packageInfo, importsFromHome map[string]bool) bool {
+	f := b.filter
+
 	if !f.ShowHome && p.isHome {
 		return false
 	}
@@ -31,7 +61,7 @@ func (f *Filter) passFilter(p *packageInfo, importsFromHome map[string]bool) boo
 		return false
 	}
 
-	if !f.ShowNonHomeRoots {
+	if f.OnlyHomeRoots {
 		_, ok := importsFromHome[p.id]
 		if !ok {
 			return false

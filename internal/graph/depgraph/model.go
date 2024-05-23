@@ -1,15 +1,15 @@
 package depgraph
 
 type Package struct {
-	Name       string
-	IsPlatform bool
-	IsHome     bool
-	IsOuter    bool
-	IsStandard bool
-	Id         string
-	Imports    []*Import
-	FanIn      int
-	FanOut     int
+	Name        string
+	IsPlatform  bool
+	IsHome      bool
+	IsOuter     bool
+	IsStandard  bool
+	Id          string
+	Imports     []*Import
+	FanInCount  int
+	FanOutCount int
 }
 
 type DepGraph struct {
@@ -21,19 +21,19 @@ type Import struct {
 }
 
 type Filter struct {
-	ShowHome         bool
-	ShowStandard     bool
-	ShowPlatform     bool
-	ShowOuter        bool
-	ShowNonHomeRoots bool
+	ShowHome      bool // TODO does false makes sense?
+	ShowStandard  bool
+	ShowPlatform  bool
+	ShowOuter     bool
+	OnlyHomeRoots bool // TODO does false makes sense?
 }
 
 func NewDefaultFilter() *Filter {
 	return &Filter{
-		ShowHome:         true,
-		ShowStandard:     false,
-		ShowPlatform:     true,
-		ShowOuter:        true,
-		ShowNonHomeRoots: false,
+		ShowHome:      true,
+		ShowStandard:  false,
+		ShowPlatform:  true,
+		ShowOuter:     true,
+		OnlyHomeRoots: true,
 	}
 }

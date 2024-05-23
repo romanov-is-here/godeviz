@@ -73,7 +73,7 @@ func (b *Builder) collectHits() {
 		pck.fanOut = len(pck.imports)
 		for _, imp := range pck.imports {
 			if destPack, ok := b.packs[imp.id]; ok {
-				destPack.fanOut++
+				destPack.fanIn++
 			}
 		}
 	}
@@ -97,15 +97,15 @@ func newPackage(p *packageInfo) *Package {
 		imports = append(imports, &Import{Id: imp.id})
 	}
 	return &Package{
-		Name:       p.Name(),
-		IsPlatform: p.isPlatform,
-		IsHome:     p.isHome,
-		IsOuter:    p.isOuter,
-		IsStandard: p.isStandard,
-		Id:         p.id,
-		Imports:    imports,
-		FanIn:      p.fanIn,
-		FanOut:     p.fanOut,
+		Name:        p.Name(),
+		IsPlatform:  p.isPlatform,
+		IsHome:      p.isHome,
+		IsOuter:     p.isOuter,
+		IsStandard:  p.isStandard,
+		Id:          p.id,
+		Imports:     imports,
+		FanInCount:  p.fanIn,
+		FanOutCount: p.fanOut,
 	}
 }
 

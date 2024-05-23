@@ -1,11 +1,12 @@
 package dto
 
 type Node struct {
-	Name    string `json:"name"`
-	IsHome  bool   `json:"isHome"`
-	Color   string `json:"color,omitempty"`
-	InDeps  int    `json:"inDeps"`
-	OutDeps int    `json:"outDeps"`
+	Name        string    `json:"name"`
+	IsHome      bool      `json:"isHome"`
+	Color       string    `json:"color,omitempty"`
+	FanInCount  int       `json:"fanInCount"`
+	FanOutCount int       `json:"fanOutCount"`
+	Imports     []*Import `json:"imports"`
 }
 
 type Edge struct {
@@ -17,4 +18,9 @@ type Edge struct {
 type Graph struct {
 	Nodes map[string]*Node `json:"nodes"`
 	Edges map[string]*Edge `json:"edges"`
+}
+
+type Import struct {
+	Id   string `json:"id"`
+	Name string `json:"name"`
 }

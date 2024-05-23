@@ -311,9 +311,17 @@ export default {
       <div>
         {{ data.nodes[targetNodeId]?.name ?? "" }}
         <br>
-        Imports: {{data.nodes[targetNodeId]?.outDeps ?? 0}}
+        FanIn: {{data.nodes[targetNodeId]?.fanInCount ?? -1}}
+        <br/>
+        FanOut: {{data.nodes[targetNodeId]?.fanOutCount ?? -1}}
         <br>
-        In deps: {{data.nodes[targetNodeId]?.inDeps ?? 0}}
+        Imports:
+        <br/>
+        <div v-for="item in data.nodes[targetNodeId]?.imports" :key="item.id">
+          {{ item.name }}
+          <br/>
+        </div>
+
       </div>
     </div>
 

@@ -1,6 +1,8 @@
 package graphcontroller
 
 import (
+	"strconv"
+
 	"github.com/romanov-is-here/godeviz/internal/api/controllers/graphcontroller/dto"
 	"github.com/romanov-is-here/godeviz/internal/graph/lister"
 )
@@ -21,12 +23,21 @@ func (s *graphService) getGraph(path string) (*dto.Graph, error) {
 
 	// Collect nodes
 	for _, pck := range g.Packs {
+		imports := make([]*dto.Import, 0)
+		for i, imp := range pck.Imports {
+			dtoImp := &dto.Import{
+				Id:   strconv.Itoa(i),
+				Name: imp.Id,
+			}
+			imports = append(imports, dtoImp)
+		}
 		node := dto.Node{
-			Name:    pck.Name,
-			IsHome:  pck.IsHome,
-			Color:   getColor(pck),
-			InDeps:  pck.FanIn,
-			OutDeps: pck.FanOut,
+			Name:        pck.Name,
+			IsHome:      pck.IsHome,
+			Color:       getColor(pck),
+			FanInCount:  pck.FanInCount,
+			FanOutCount: pck.FanOutCount,
+			Imports:     imports,
 		}
 		outGraph.Nodes[pck.Id] = &node
 	}
