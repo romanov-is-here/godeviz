@@ -33,6 +33,7 @@ func (s *graphService) getGraph(path string, filter *depgraph.Filter) (*dto.Grap
 			imports = append(imports, dtoImp)
 		}
 		node := dto.Node{
+			Id:          pck.Id,
 			Name:        pck.Name,
 			IsHome:      pck.IsHome,
 			Color:       getColor(pck),

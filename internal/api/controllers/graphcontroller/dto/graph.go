@@ -1,6 +1,7 @@
 package dto
 
 type Node struct {
+	Id          string    `json:"id"`
 	Name        string    `json:"name"`
 	IsHome      bool      `json:"isHome"`
 	Color       string    `json:"color,omitempty"`
