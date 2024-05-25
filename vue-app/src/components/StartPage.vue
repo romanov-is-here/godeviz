@@ -66,17 +66,21 @@ export default {
 
     const nodeSize = 20
     const NODE_RADIUS = nodeSize / 2
+    const letterWidth = 8
+    const emojiWidth = 20
 
     const configs = vNG.defineConfigs({
       view: {
         autoPanAndZoomOnLoad: "fit-content",
+        layoutHandler: new vNG.GridLayout({ grid: 50 }), // snap to grid
         onBeforeInitialDisplay: () => layout("TB"),
       },
       node: {
         normal: {
           radius: node => node.size ?? NODE_RADIUS,
           color: node => node.color,
-
+          type: "rect",
+          width: node => node.name.length * letterWidth + emojiWidth
         },
         hover: {
           color: node => node.color,
@@ -230,7 +234,8 @@ export default {
       // metadata about the node. In this case we're going to add labels to each of
       // our nodes.
       Object.entries(data.nodes).forEach(([nodeId, node]) => {
-        g.setNode(nodeId, { label: node.name, width: nodeSize, height: nodeSize })
+        const w = node.name.length * letterWidth + emojiWidth
+        g.setNode(nodeId, { label: node.name, width: w, height: 25 })
       })
 
       // Add edges to the graph.
@@ -321,7 +326,23 @@ export default {
         :layouts="layouts"
         :configs="configs"
         :event-handlers="eventHandlers"
-    />
+    >
+      <template
+          #override-node-label="{
+         scale, text
+      }"
+      >
+        <text
+            x="0"
+            y="0"
+            :font-size="14 * scale"
+            text-anchor="middle"
+            dominant-baseline="central"
+            fill="#000000"
+            font-family="monospace"
+        >{{ text }}</text>
+      </template>
+    </VNetworkGraph>
     <div
         ref="tooltip"
         class="tooltip"
@@ -333,14 +354,6 @@ export default {
         FanIn: {{data.nodes[targetNodeId]?.fanInCount ?? -1}}
         <br/>
         FanOut: {{data.nodes[targetNodeId]?.fanOutCount ?? -1}}
-        <br>
-        Imports:
-        <br/>
-        <div v-for="item in data.nodes[targetNodeId]?.imports" :key="item.id">
-          {{ item.name }}
-          <br/>
-        </div>
-
       </div>
     </div>
 
