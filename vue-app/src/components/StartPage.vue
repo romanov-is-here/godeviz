@@ -85,7 +85,7 @@ export default {
         hover: {
           color: node => node.color,
         },
-        label: { direction: "south", color: "#000000", directionAutoAdjustment: true, fontSize: 14 },
+        label: { color: "#000000", fontSize: 14 },
       },
       edge: {
         type: "curve",
