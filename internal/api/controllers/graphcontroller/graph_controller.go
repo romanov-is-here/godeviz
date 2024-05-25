@@ -54,10 +54,10 @@ func (c *graphController) GetGraph(w http.ResponseWriter, r *http.Request) {
 
 func getColor(p *depgraph.Package) string {
 	if p.IsHome {
-		return "brown"
+		return "#ffcc99"
 	}
 	if p.IsPlatform {
-		return "purple"
+		return "#c684f5"
 	}
 	if p.IsStandard {
 		return "#0bd63e"
