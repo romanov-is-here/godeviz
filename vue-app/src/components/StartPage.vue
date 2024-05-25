@@ -225,7 +225,10 @@ export default {
         rankdir: direction,
         nodesep: nodeSize * 5,
         edgesep: nodeSize * 2,
-        ranksep: nodeSize * 5,
+        ranksep: nodeSize * 10,
+        marginx: 20,
+        marginy: 20,
+        ranker: "longest-path"
       })
       // Default to assigning a new object as a label for each new edge.
       g.setDefaultEdgeLabel(() => ({}))

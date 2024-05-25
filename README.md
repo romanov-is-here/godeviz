@@ -8,6 +8,7 @@ Dependency visualizer for go projects
 ### Roadmap
 
 - Drill in в фильтре
+- Показывать ошибку получения данных
 - Карточка выделенного нода в UI
 - Drill in в UI
 - Пропускать сгенерированные
