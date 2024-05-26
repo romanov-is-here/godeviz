@@ -244,34 +244,35 @@ export default {
 </script>
 
 <template>
-  <div v-if="isGraphVisible">
-    <FilterBar
-        :filter = "filter"
-        @filter-changed = "onFilterChanged"
-    />
-  </div>
-  <div v-if="isInputsVisible" class="centered-div">
-    <div class="alert alert-success" role="alert">
-      Enter a path to the package:
+  <div class="header">
+    <div v-if="isGraphVisible">
+      <FilterBar
+          :filter = "filter"
+          @filter-changed = "onFilterChanged"
+      />
+    </div>
+    <div v-if="isInputsVisible" class="centered-div">
+      <div class="alert alert-success" role="alert">
+        Enter a path to the package:
+      </div>
+
+      <input v-model="path" type="text" class="form-control" placeholder="Your path here" aria-label="Path">
+
+      <button type="button" class="btn btn-primary show-btn" @click="showGraph">Show graph</button>
     </div>
 
-    <input v-model="path" type="text" class="form-control" placeholder="Your path here" aria-label="Path">
+    <div v-if="!isInputsVisible && !isLoaderVisible">
+      <h4>{{path}}</h4>
+      <br>
+      <button type="button" class="btn btn-primary" @click="reset">Reset</button>
+    </div>
 
-    <button type="button" class="btn btn-primary show-btn" @click="showGraph">Show graph</button>
-  </div>
-
-  <div v-if="!isInputsVisible && !isLoaderVisible">
-    <h4>{{path}}</h4>
-    <br>
-    <button type="button" class="btn btn-primary" @click="reset">Reset</button>
-  </div>
-
-  <div v-if="isLoaderVisible" class="centered-div">
-    <div class="alert alert-success" role="alert">
-      Loading data
+    <div v-if="isLoaderVisible" class="centered-div">
+      <div class="alert alert-success" role="alert">
+        Loading data
+      </div>
     </div>
   </div>
-
   <div v-if="isGraphVisible" class="tooltip-wrapper full-page">
     <VNetworkGraph
         class="graph"
@@ -334,11 +335,15 @@ export default {
   margin: 16px
 }
 .full-page {
-  height: 100vh;
-  width: 100%;
+  height: calc(100vh - 300px);
+  width: calc (100% - 20px);
   border: 3px solid gray; /* Толщина 3 пикселя, серый цвет */
   border-radius: 10px; /* Скругленные края */
-  margin: 10px
+  margin: 10px;
+}
+.header {
+  height: 200px;
+  width: 100%;
 }
 .tooltip-wrapper {
   position: relative;
