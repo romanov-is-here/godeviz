@@ -273,7 +273,7 @@ export default {
       </div>
     </div>
   </div>
-  <div v-if="isGraphVisible" class="tooltip-wrapper full-page">
+  <div v-if="isGraphVisible" class="tooltip-wrapper graph-zone">
     <VNetworkGraph
         class="graph"
         ref="graph"
@@ -334,7 +334,7 @@ export default {
 .show-btn {
   margin: 16px
 }
-.full-page {
+.graph-zone {
   height: calc(100vh - 300px);
   width: calc(100% - 20px);
   border: 3px solid gray; /* Толщина 3 пикселя, серый цвет */
