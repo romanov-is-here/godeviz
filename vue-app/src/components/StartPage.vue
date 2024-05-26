@@ -336,7 +336,7 @@ export default {
 }
 .full-page {
   height: calc(100vh - 300px);
-  width: calc (100% - 20px);
+  width: calc(100% - 20px);
   border: 3px solid gray; /* Толщина 3 пикселя, серый цвет */
   border-radius: 10px; /* Скругленные края */
   margin: 10px;
