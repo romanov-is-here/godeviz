@@ -4,7 +4,6 @@ import {VNetworkGraph} from "v-network-graph";
 import * as vNG from "v-network-graph"
 import "v-network-graph/lib/style.css"
 import axios from 'axios';
-import dagre from "dagre"
 import FilterBar from "@/components/FilterBar.vue";
 
 export default {
@@ -20,9 +19,7 @@ export default {
     const isGraphVisible = ref(false)
 
     const data = reactive({nodes : {}, edges:{}})
-    const layouts = reactive({
-      nodes: {},
-    })
+    const layouts = ref({})
 
     const showGraph = () => {
       isInputsVisible.value = false
@@ -53,7 +50,6 @@ export default {
 
         data.nodes = response.data.nodes
         data.edges = response.data.edges
-        layout("TB")
         isGraphVisible.value = true
       } catch (error) {
         console.error('Ошибка при получении данных:', error);
@@ -71,9 +67,7 @@ export default {
 
     const configs = vNG.defineConfigs({
       view: {
-        autoPanAndZoomOnLoad: "fit-content",
-        layoutHandler: new vNG.GridLayout({ grid: 50 }), // snap to grid
-        onBeforeInitialDisplay: () => layout("TB"),
+        layoutHandler: new vNG.GridLayout({ grid: 10 }), // snap to grid
       },
       node: {
         normal: {
@@ -122,7 +116,11 @@ export default {
     const targetEdgeId = ref("")
 
     const targetNodePos = computed(() => {
-      const nodePos = layouts.nodes[targetNodeId.value]
+      if (!targetNodeId.value) {
+        return {x: 0, y: 0}
+      }
+
+      const nodePos = layouts.value.nodes[targetNodeId.value]
       return nodePos || {x: 0, y: 0}
     })
 
@@ -135,8 +133,8 @@ export default {
       const sourceNode = data.edges[targetEdgeId.value].source
       const targetNode = data.edges[targetEdgeId.value].target
       return {
-        x: (layouts.nodes[sourceNode].x + layouts.nodes[targetNode].x) / 2,
-        y: (layouts.nodes[sourceNode].y + layouts.nodes[targetNode].y) / 2,
+        x: (layouts.value.nodes[sourceNode].x + layouts.value.nodes[targetNode].x) / 2,
+        y: (layouts.value.nodes[sourceNode].y + layouts.value.nodes[targetNode].y) / 2,
       }
     })
     /////////// tooltip
@@ -210,52 +208,6 @@ export default {
       },
     }
 
-    ////////////// layout
-
-    function layout(direction) {
-      if (Object.keys(data.nodes).length <= 1 || Object.keys(data.edges).length == 0) {
-        return
-      }
-
-      // convert graph
-      // ref: https://github.com/dagrejs/dagre/wiki
-      const g = new dagre.graphlib.Graph()
-      // Set an object for the graph label
-      g.setGraph({
-        rankdir: direction,
-        nodesep: nodeSize * 5,
-        edgesep: nodeSize * 2,
-        ranksep: nodeSize * 10,
-        marginx: 20,
-        marginy: 20,
-        ranker: "longest-path"
-      })
-      // Default to assigning a new object as a label for each new edge.
-      g.setDefaultEdgeLabel(() => ({}))
-
-      // Add nodes to the graph. The first argument is the node id. The second is
-      // metadata about the node. In this case we're going to add labels to each of
-      // our nodes.
-      Object.entries(data.nodes).forEach(([nodeId, node]) => {
-        const w = node.name.length * letterWidth + emojiWidth
-        g.setNode(nodeId, { label: node.name, width: w, height: 25 })
-      })
-
-      // Add edges to the graph.
-      Object.values(data.edges).forEach(edge => {
-        g.setEdge(edge.source, edge.target)
-      })
-
-      dagre.layout(g)
-
-      g.nodes().forEach((nodeId) => {
-        // update node position
-        const x = g.node(nodeId).x
-        const y = g.node(nodeId).y
-        layouts.nodes[nodeId] = { x, y }
-      })
-    }
-
     const filter = reactive({
       showStandard: false,
       showPlatform: true,
@@ -324,9 +276,9 @@ export default {
     <VNetworkGraph
         class="graph"
         ref="graph"
+        v-model:layouts="layouts"
         :nodes="data.nodes"
         :edges="data.edges"
-        :layouts="layouts"
         :configs="configs"
         :event-handlers="eventHandlers"
     >
