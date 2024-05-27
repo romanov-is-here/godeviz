@@ -5,12 +5,14 @@ import * as vNG from "v-network-graph"
 import "v-network-graph/lib/style.css"
 import axios from 'axios';
 import FilterBar from "@/components/FilterBar.vue";
+import NodeCard from "@/components/NodeCard.vue";
 
 export default {
   name: "StartPage",
   components: {
     FilterBar,
-    VNetworkGraph
+    VNetworkGraph,
+    NodeCard
   },
   setup: function () {
     const path = ref('/Users/ilyaromanov/Projects/platform-go/');
@@ -245,13 +247,27 @@ export default {
 
 <template>
   <div class="header">
-    <div v-if="isGraphVisible">
-      <FilterBar
-          :filter = "filter"
-          @filter-changed = "onFilterChanged"
-      />
+    <div v-if="!isInputsVisible && !isLoaderVisible">
+      <h5>
+        Dependency graph for: {{path}}
+      </h5>
+      <button type="button" class="btn btn-primary" @click="reset">Reset</button>
     </div>
-    <div v-if="isInputsVisible" class="centered-div">
+
+    <div v-if="isGraphVisible">
+      <div class="filter-zone">
+        <FilterBar
+            :filter = "filter"
+            @filter-changed = "onFilterChanged"
+        />
+      </div>
+
+      <div class="node-card">
+        <NodeCard />
+      </div>
+    </div>
+
+    <div v-if="isInputsVisible" class="centered-div"> <!-- TODO separate component or page for entering path-->
       <div class="alert alert-success" role="alert">
         Enter a path to the package:
       </div>
@@ -261,44 +277,40 @@ export default {
       <button type="button" class="btn btn-primary show-btn" @click="showGraph">Show graph</button>
     </div>
 
-    <div v-if="!isInputsVisible && !isLoaderVisible">
-      <h4>{{path}}</h4>
-      <br>
-      <button type="button" class="btn btn-primary" @click="reset">Reset</button>
-    </div>
-
     <div v-if="isLoaderVisible" class="centered-div">
       <div class="alert alert-success" role="alert">
         Loading data
       </div>
     </div>
   </div>
-  <div v-if="isGraphVisible" class="tooltip-wrapper graph-zone">
-    <VNetworkGraph
-        class="graph"
-        ref="graph"
-        v-model:layouts="layouts"
-        :nodes="data.nodes"
-        :edges="data.edges"
-        :configs="configs"
-        :event-handlers="eventHandlers"
-    >
-      <template
-          #override-node-label="{
-         scale, text
-      }"
+  <div v-if="isGraphVisible" class="tooltip-wrapper">
+    <div class="graph-zone">
+      <VNetworkGraph
+          class="graph"
+          ref="graph"
+          v-model:layouts="layouts"
+          :nodes="data.nodes"
+          :edges="data.edges"
+          :configs="configs"
+          :event-handlers="eventHandlers"
       >
-        <text
-            x="0"
-            y="0"
-            :font-size="14 * scale"
-            text-anchor="middle"
-            dominant-baseline="central"
-            fill="#000000"
-            font-family="monospace"
-        >{{ text }}</text>
-      </template>
-    </VNetworkGraph>
+        <template
+            #override-node-label="{
+           scale, text
+        }"
+        >
+          <text
+              x="0"
+              y="0"
+              :font-size="14 * scale"
+              text-anchor="middle"
+              dominant-baseline="central"
+              fill="#000000"
+              font-family="monospace"
+          >{{ text }}</text>
+        </template>
+      </VNetworkGraph>
+    </div>
     <div
         ref="tooltip"
         class="tooltip"
@@ -334,11 +346,25 @@ export default {
 .show-btn {
   margin: 16px
 }
+.filter-zone {
+  float: left;
+  border: 3px solid gray;
+  border-radius: 10px;
+  width: 200px;
+  margin: 10px;
+}
+.node-card {
+  width: calc(100% - 240px); /* width - around header width */
+  float:left;
+  border: 3px solid gray;
+  border-radius: 10px;
+  margin: 10px;
+}
 .graph-zone {
   height: calc(100vh - 300px);
   width: calc(100% - 20px);
-  border: 3px solid gray; /* Толщина 3 пикселя, серый цвет */
-  border-radius: 10px; /* Скругленные края */
+  border: 3px solid gray;
+  border-radius: 10px;
   margin: 10px;
 }
 .header {

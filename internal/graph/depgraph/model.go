@@ -26,7 +26,17 @@ type Filter struct {
 	ShowPlatform  bool
 	ShowOuter     bool
 	OnlyHomeRoots bool // TODO does false makes sense?
+	FocusPackage  string
+	FocusType     FocusType
 }
+
+type FocusType int
+
+const (
+	OutsOnly FocusType = iota
+	InsOnly
+	Both
+)
 
 func NewDefaultFilter() *Filter {
 	return &Filter{

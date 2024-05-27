@@ -45,6 +45,25 @@ func boolFromQuery(w http.ResponseWriter, r *http.Request, name string, required
 	return value, true
 }
 
+func intFromQuery(w http.ResponseWriter, r *http.Request, name string, required bool) (int, bool) {
+	fromQuery := r.URL.Query().Get(name)
+
+	if fromQuery == "" {
+		if required {
+			http.Error(w, "Missing required'"+name+"' query parameter", http.StatusBadRequest)
+		}
+		return 0, false
+	}
+
+	value, err := strconv.Atoi(fromQuery)
+	if err != nil {
+		http.Error(w, "Failed to parse int param '"+name+"'", http.StatusBadRequest)
+		return 0, false
+	}
+
+	return value, true
+}
+
 func getFilter(w http.ResponseWriter, r *http.Request) (*depgraph.Filter, bool) {
 	filter := depgraph.NewDefaultFilter()
 
@@ -58,6 +77,14 @@ func getFilter(w http.ResponseWriter, r *http.Request) (*depgraph.Filter, bool) 
 
 	if showOuter, ok := boolFromQuery(w, r, "show_outer", false); ok {
 		filter.ShowOuter = showOuter
+	}
+
+	if focusPackage, ok := strFromQuery(w, r, "focusPackage", false); ok {
+		filter.FocusPackage = focusPackage
+
+		if focusType, okType := intFromQuery(w, r, "focusType", false); okType {
+			filter.FocusType = depgraph.FocusType(focusType)
+		}
 	}
 
 	return filter, true

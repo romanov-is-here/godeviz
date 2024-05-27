@@ -125,6 +125,16 @@ func (p *packageInfo) Name() string {
 	return "⚠️" + p.id // this is unexpected
 }
 
+func (p *packageInfo) hasImport(id string) bool {
+	for _, imp := range p.imports {
+		if imp.id == id {
+			return true
+		}
+	}
+
+	return false
+}
+
 type packageImport struct {
 	id string
 }
