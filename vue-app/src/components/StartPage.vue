@@ -13,7 +13,7 @@ export default {
     VNetworkGraph
   },
   setup: function () {
-    const path = ref('/Users/ilyaromanov/Projects/platform-go/cmd/devp');
+    const path = ref('/Users/ilyaromanov/Projects/platform-go/');
     const isInputsVisible = ref(true);
     const isLoaderVisible = ref(false);
     const isGraphVisible = ref(false)

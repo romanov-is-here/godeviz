@@ -11,7 +11,7 @@ import (
 func main() {
 	//err, g := lister.GetGraph("/Users/ilyaromanov/Projects/api", depgraph.NewDefaultFilter())
 	err, g := lister.GetGraph("/Users/ilyaromanov/Projects/godeviz", depgraph.NewDefaultFilter())
-	//err, g := lister.GetGraph("/Users/ilyaromanov/Projects/platform-go/cmd/devp", depgraph.NewDefaultFilter())
+	//err, g := lister.GetGraph("/Users/ilyaromanov/Projects/platform-go/", depgraph.NewDefaultFilter())
 	//err := lister.GetGraph("./...")
 	if err != nil {
 		fmt.Println("error happened: ", err)
