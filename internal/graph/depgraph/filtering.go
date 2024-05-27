@@ -40,10 +40,6 @@ func (b *Builder) passImportFilter(p *packageInfo, imp *packageImport, focusPack
 		return false
 	}
 
-	if !b.passFocusFilter(imp.id, focusPackage) {
-		return false
-	}
-
 	return true
 }
 
@@ -73,17 +69,17 @@ func (b *Builder) passPackageFilter(p *packageInfo, importsFromHome map[string]b
 		}
 	}
 
-	if !b.passFocusFilter(p.id, focusPackage) {
+	if !b.passFocusFilter(p, focusPackage) {
 		return false
 	}
 
 	return true
 }
 
-func (b *Builder) passFocusFilter(pid string, focusPackage *packageInfo) bool {
+func (b *Builder) passFocusFilter(p *packageInfo, focusPackage *packageInfo) bool {
 	f := b.filter
 
-	if f.FocusPackage == "" || f.FocusPackage == pid {
+	if f.FocusPackage == "" || f.FocusPackage == p.id {
 		return true
 	}
 
@@ -91,15 +87,12 @@ func (b *Builder) passFocusFilter(pid string, focusPackage *packageInfo) bool {
 		return false // TODO можно возвращать ошибку, но не хочется. Если не нашли - ничего не покажем
 	}
 
-	if f.FocusType == OutsOnly || f.FocusType == Both {
-		return focusPackage.hasImport(pid)
-	}
-
-	p, ok := b.packs[pid]
-	if !ok {
-		return false
-	}
-	if f.FocusType == InsOnly || f.FocusType == Both {
+	switch f.FocusType {
+	case Both:
+		return focusPackage.hasImport(p.id) || p.hasImport(f.FocusPackage)
+	case OutsOnly:
+		return focusPackage.hasImport(p.id)
+	case InsOnly:
 		return p.hasImport(f.FocusPackage)
 	}
 

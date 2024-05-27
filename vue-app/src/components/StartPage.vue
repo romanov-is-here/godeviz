@@ -19,6 +19,8 @@ export default {
     const isInputsVisible = ref(true);
     const isLoaderVisible = ref(false);
     const isGraphVisible = ref(false)
+    const selectedNodes = ref([])
+    const selectedNode = ref()
 
     const data = reactive({nodes : {}, edges:{}})
     const layouts = ref({})
@@ -41,12 +43,25 @@ export default {
 
     const fetchGraph = async () => {
       try {
+        let focusType = 0
+        if (focusFilter.focusIns && focusFilter.focusOuts) {
+          focusType = 2
+        } else if (focusFilter.focusIns) {
+          focusType = 1
+        }
+
+        let focusPackage = ""
+        if (focusFilter.doFocus) {
+          focusPackage = selectedNode.value?.id ?? ""
+        }
         const response = await axios.get('/api/graph', {
           params: {
             path: encodeURIComponent(path.value),
             show_standard : filter.showStandard,
             show_platform : filter.showPlatform,
             show_outer : filter.showOuter,
+            focus_package: focusPackage,
+            focus_type: focusType
           }
         });
 
@@ -72,6 +87,7 @@ export default {
         layoutHandler: new vNG.GridLayout({ grid: 10 }), // snap to grid
       },
       node: {
+        selectable: true,
         normal: {
           radius: node => node.size ?? NODE_RADIUS,
           color: node => node.color,
@@ -177,6 +193,21 @@ export default {
         { deep: true }
     )
 
+    /////////// selectedNodesChanged
+    watch(
+        () => [selectedNodes.value],
+        () => {
+          if (selectedNodes.value.length === 0) {
+            selectedNode.value = null
+          } else {
+            selectedNode.value = data.nodes[selectedNodes.value[0]]
+          }
+        },
+        { deep: true }
+    )
+
+    //////////// events
+
     const oldColorSource = ref('')
     const oldColorTarget = ref('')
     const eventHandlers = {
@@ -213,7 +244,13 @@ export default {
     const filter = reactive({
       showStandard: false,
       showPlatform: true,
-      showOuter: true
+      showOuter: true,
+    })
+
+    const focusFilter = reactive({
+      focusIns: true,
+      focusOuts: true,
+      doFocus: false
     })
 
     return {
@@ -238,7 +275,10 @@ export default {
       edgetipOpacity,
       edgeCenterPos,
       filter,
-      onFilterChanged
+      onFilterChanged,
+      selectedNodes,
+      selectedNode,
+      focusFilter,
     };
   }
 }
@@ -262,8 +302,11 @@ export default {
         />
       </div>
 
-      <div class="node-card">
-        <NodeCard />
+      <div v-if="selectedNode" class="node-card">
+        <NodeCard
+            :focusFilter = "focusFilter"
+            :selectedNode = "selectedNode"
+            @focus-request = "onFilterChanged"/>
       </div>
     </div>
 
@@ -289,6 +332,7 @@ export default {
           class="graph"
           ref="graph"
           v-model:layouts="layouts"
+          v-model:selected-nodes="selectedNodes"
           :nodes="data.nodes"
           :edges="data.edges"
           :configs="configs"
@@ -368,7 +412,7 @@ export default {
   margin: 10px;
 }
 .header {
-  height: 200px;
+  height: 240px;
   width: 100%;
 }
 .tooltip-wrapper {

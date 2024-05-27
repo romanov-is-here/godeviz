@@ -79,10 +79,10 @@ func getFilter(w http.ResponseWriter, r *http.Request) (*depgraph.Filter, bool) 
 		filter.ShowOuter = showOuter
 	}
 
-	if focusPackage, ok := strFromQuery(w, r, "focusPackage", false); ok {
+	if focusPackage, ok := strFromQuery(w, r, "focus_package", false); ok {
 		filter.FocusPackage = focusPackage
 
-		if focusType, okType := intFromQuery(w, r, "focusType", false); okType {
+		if focusType, okType := intFromQuery(w, r, "focus_type", false); okType {
 			filter.FocusType = depgraph.FocusType(focusType)
 		}
 	}
