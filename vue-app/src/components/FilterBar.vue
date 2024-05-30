@@ -36,6 +36,11 @@ export default {
         <input class="form-check-input" type="checkbox" v-model="filterLocal.showOuter" id="showOuter">
         <label class="form-check-label" for="showOuter">Show outer</label>
       </div>
+
+      <div class="form-check form-switch">
+        <input class="form-check-input" type="checkbox" v-model="filterLocal.showRatio" id="showRatio">
+        <label class="form-check-label" for="showRatio">Show ratio</label>
+      </div>
     </form>
   </div>
 </template>

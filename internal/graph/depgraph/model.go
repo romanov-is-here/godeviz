@@ -28,6 +28,7 @@ type Filter struct {
 	OnlyHomeRoots bool // TODO does false makes sense?
 	FocusPackage  string
 	FocusType     FocusType
+	ShowRatio     bool
 }
 
 type FocusType int
@@ -41,7 +42,6 @@ const (
 func NewDefaultFilter() *Filter {
 	return &Filter{
 		ShowHome:      true,
-		ShowStandard:  false,
 		ShowPlatform:  true,
 		ShowOuter:     true,
 		OnlyHomeRoots: true,

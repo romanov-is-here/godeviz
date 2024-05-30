@@ -15,9 +15,9 @@ export default {
     NodeCard
   },
   setup: function () {
-    const path = ref('/Users/ilyaromanov/Projects/platform-go/');
-    const isInputsVisible = ref(true);
-    const isLoaderVisible = ref(false);
+    const path = ref('/Users/ilyaromanov/Projects/platform-go/')
+    const isInputsVisible = ref(true)
+    const isLoaderVisible = ref(false)
     const isGraphVisible = ref(false)
     const selectedNodes = ref([])
     const selectedNode = ref()
@@ -61,7 +61,8 @@ export default {
             show_platform : filter.showPlatform,
             show_outer : filter.showOuter,
             focus_package: focusPackage,
-            focus_type: focusType
+            focus_type: focusType,
+            show_ratio: filter.showRatio,
           }
         });
 
@@ -80,11 +81,20 @@ export default {
     const nodeSize = 20
     const NODE_RADIUS = nodeSize / 2
     const letterWidth = 8
-    const emojiWidth = 20
+    const emojiWidth = 25
+    const snap = 10
+
+    const getNodeWidth = function (node) {
+      let width = (node.name.length -1 ) * letterWidth + emojiWidth
+      if (!filter.showRatio) {
+        width += (node.fanInCount.toString().length + node.fanOutCount.toString().length + 2) * letterWidth
+      }
+      return Math.ceil(width / snap) * snap
+    }
 
     const configs = vNG.defineConfigs({
       view: {
-        layoutHandler: new vNG.GridLayout({ grid: 10 }), // snap to grid
+        layoutHandler: new vNG.GridLayout({ grid: snap }), // snap to grid
       },
       node: {
         selectable: true,
@@ -92,7 +102,7 @@ export default {
           radius: node => node.size ?? NODE_RADIUS,
           color: node => node.color,
           type: "rect",
-          width: node => node.name.length * letterWidth + emojiWidth
+          width: node => getNodeWidth(node)
         },
         hover: {
           color: node => node.color,
@@ -245,6 +255,7 @@ export default {
       showStandard: false,
       showPlatform: true,
       showOuter: true,
+      showRatio: false
     })
 
     const focusFilter = reactive({
@@ -287,11 +298,13 @@ export default {
 
 <template>
   <div class="header">
-    <div v-if="!isInputsVisible && !isLoaderVisible">
-      <h5>
-        Dependency graph for: {{path}}
-      </h5>
-      <button type="button" class="btn btn-primary" @click="reset">Reset</button>
+    <div v-if="!isInputsVisible">
+      <div>
+        <h5>
+          Dependency graph for: {{path}}
+          <button type="button" class="btn btn-danger control-btn" @click="reset">Reset</button>
+        </h5>
+      </div>
     </div>
 
     <div v-if="isGraphVisible">
@@ -320,7 +333,7 @@ export default {
       <button type="button" class="btn btn-primary show-btn" @click="showGraph">Show graph</button>
     </div>
 
-    <div v-if="isLoaderVisible" class="centered-div">
+    <div v-if="isLoaderVisible" class="centered-div loader">
       <div class="alert alert-success" role="alert">
         Loading data
       </div>
@@ -398,7 +411,7 @@ export default {
   margin: 10px;
 }
 .node-card {
-  width: calc(100% - 240px); /* width - around header width */
+  width: calc(100% - 240px); /* width - around filter width */
   float:left;
   border: 3px solid gray;
   border-radius: 10px;
@@ -453,5 +466,8 @@ export default {
   box-shadow: 2px 2px 2px #aaa;
   transition: opacity 0.2s linear;
   pointer-events: none;
+}
+.control-btn {
+  margin: 5px;
 }
 </style>

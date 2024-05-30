@@ -87,5 +87,9 @@ func getFilter(w http.ResponseWriter, r *http.Request) (*depgraph.Filter, bool) 
 		}
 	}
 
+	if showRatio, ok := boolFromQuery(w, r, "show_ratio", false); ok {
+		filter.ShowRatio = showRatio
+	}
+
 	return filter, true
 }

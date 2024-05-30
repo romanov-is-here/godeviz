@@ -1,6 +1,7 @@
 package depgraph
 
 import (
+	"fmt"
 	"strings"
 
 	"github.com/romanov-is-here/godeviz/internal/graph/gomodel"
@@ -62,7 +63,7 @@ func (b *Builder) Build() *DepGraph {
 	}
 
 	for k, v := range b.packs {
-		g.Packs[k] = newPackage(v)
+		g.Packs[k] = newPackage(v, b.filter.ShowRatio)
 	}
 
 	return g
@@ -91,13 +92,17 @@ type packageInfo struct {
 	fanOut     int
 }
 
-func newPackage(p *packageInfo) *Package {
+func newPackage(p *packageInfo, showRatio bool) *Package {
 	imports := make([]*Import, 0)
 	for _, imp := range p.imports {
 		imports = append(imports, &Import{Id: imp.id})
 	}
+	name := p.Name()
+	if showRatio {
+		name += fmt.Sprintf(" %d:%d", p.fanIn, p.fanOut)
+	}
 	return &Package{
-		Name:        p.Name(),
+		Name:        name,
 		IsPlatform:  p.isPlatform,
 		IsHome:      p.isHome,
 		IsOuter:     p.isOuter,
