@@ -21,7 +21,7 @@ export default {
 <template>
   <div v-if="selectedNode">
     <div class="header">
-      {{selectedNode.name}}
+      {{selectedNode.name}} {{selectedNode.fanInCount}}:{{selectedNode.fanOutCount}}
     </div>
 
     <div class="filter-container">
