@@ -43,9 +43,11 @@ export default {
 </script>
 
 <template>
-  <div v-if="showMessage" class="error-notification">
-    <p>{{ $props.errorMessage }}</p>
-    <button @click="closeError">Закрыть</button>
+  <div v-if="showMessage">
+    <div class="error-notification alert alert-danger">
+      <button class="btn btn-close top-right" @click="closeError"/>
+      <p>{{ $props.errorMessage }}</p>
+    </div>
   </div>
 </template>
 
@@ -54,8 +56,24 @@ export default {
   position: fixed;
   top: 20px;
   right: 20px;
-  background-color: #ffcccc;
   padding: 10px;
   border: 1px solid #ff0000;
+  max-width: 300px;
+  z-index: 999;
+}
+.error-notification p {
+  padding-top: 30px;
+  word-wrap: break-word;
+}
+.top-right {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  background-color: #ccc;
+  color: #fff;
+  border: none;
+  padding: 5px 10px;
+  cursor: pointer;
+
 }
 </style>
