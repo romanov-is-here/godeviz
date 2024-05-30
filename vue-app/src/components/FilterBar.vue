@@ -1,5 +1,4 @@
 <script>
-// import { ref, watch, props} from "vue";
 
 export default {
   name: "FilterBar",

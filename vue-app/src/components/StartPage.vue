@@ -6,13 +6,15 @@ import "v-network-graph/lib/style.css"
 import axios from 'axios';
 import FilterBar from "@/components/FilterBar.vue";
 import NodeCard from "@/components/NodeCard.vue";
+import ErrorNotification from "@/components/ErrorNotification.vue";
 
 export default {
   name: "StartPage",
   components: {
     FilterBar,
     VNetworkGraph,
-    NodeCard
+    NodeCard,
+    ErrorNotification
   },
   setup: function () {
     const path = ref('/Users/ilyaromanov/Projects/platform-go/')
@@ -21,6 +23,7 @@ export default {
     const isGraphVisible = ref(false)
     const selectedNodes = ref([])
     const selectedNode = ref()
+    const errorMessage = ref('')
 
     const data = reactive({nodes : {}, edges:{}})
     const layouts = ref({})
@@ -70,10 +73,15 @@ export default {
         data.edges = response.data.edges
         isGraphVisible.value = true
       } catch (error) {
-        console.error('Ошибка при получении данных:', error);
+        showErrorNotification(error.message)
       }
 
       isLoaderVisible.value = false
+    }
+
+    const showErrorNotification = function(text) {
+      const formattedTime = new Date().toLocaleTimeString('ru-ru', {hour12: false});
+      errorMessage.value = formattedTime + " " + text
     }
 
     /////////////////// configs
@@ -290,6 +298,7 @@ export default {
       selectedNodes,
       selectedNode,
       focusFilter,
+      errorMessage,
     };
   }
 }
@@ -297,6 +306,7 @@ export default {
 </script>
 
 <template>
+  <ErrorNotification :error-message="errorMessage" />
   <div class="header">
     <div v-if="!isInputsVisible">
       <div>
