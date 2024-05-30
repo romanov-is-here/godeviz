@@ -29,12 +29,12 @@ export default {
         <div>
           <div class="form-check form-switch">
             <input class="form-check-input" type="checkbox" v-model="filterLocal.focusIns" id="focusIns" required>
-            <label class="form-check-label" for="focusIns">Show dependents</label>
+            <label class="form-check-label" for="focusIns">Show ins</label>
           </div>
 
           <div class="form-check form-switch">
             <input class="form-check-input" type="checkbox" v-model="filterLocal.focusOuts" id="focusOuts" required>
-            <label class="form-check-label" for="focusOuts">Show imports</label>
+            <label class="form-check-label" for="focusOuts">Show outs</label>
           </div>
         </div>
         <button type="button" class="btn btn-primary" @click="fireFocusRequest(filterLocal, true)">Focus</button>
