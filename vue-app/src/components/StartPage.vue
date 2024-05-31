@@ -343,11 +343,13 @@ export default {
       <button type="button" class="btn btn-primary show-btn" @click="showGraph">Show graph</button>
     </div>
 
-    <div v-if="isLoaderVisible" class="centered-div loader">
-      <div class="alert alert-success" role="alert">
-        Loading data
+    <Transition>
+      <div v-if="isLoaderVisible" class="centered-div loader" v-bind:class="{ 'fade-enter': isLoaderVisible, 'fade-leave-to': !isLoaderVisible }">
+        <div class="alert alert-success" role="alert">
+          Loading data
+        </div>
       </div>
-    </div>
+    </Transition>
   </div>
   <div v-if="isGraphVisible" class="tooltip-wrapper">
     <div class="graph-zone">
@@ -479,5 +481,14 @@ export default {
 }
 .control-btn {
   margin: 5px;
+}
+.v-enter-active,
+.v-leave-active {
+  transition: opacity 0.5s ease;
+}
+
+.v-enter-from,
+.v-leave-to {
+  opacity: 0;
 }
 </style>
