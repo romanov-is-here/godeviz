@@ -73,7 +73,7 @@ export default {
         data.edges = response.data.edges
         isGraphVisible.value = true
       } catch (error) {
-        showErrorNotification(error.message)
+        showErrorNotification("Cannot fetch graph: "+ error.message)
       }
 
       isLoaderVisible.value = false
