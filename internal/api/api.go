@@ -6,12 +6,14 @@ import (
 	"github.com/gorilla/mux"
 
 	"github.com/romanov-is-here/godeviz/internal/api/controllers/graphcontroller"
+	"github.com/romanov-is-here/godeviz/internal/api/controllers/pingcontroller"
 )
 
 func Setup(r *mux.Router) {
 	r.HandleFunc("/api/hello", getHello).Methods("GET")
 
-	graphcontroller.SetupGraphController(r)
+	graphcontroller.Setup(r)
+	pingcontroller.Setup(r)
 }
 
 func getHello(w http.ResponseWriter, r *http.Request) {

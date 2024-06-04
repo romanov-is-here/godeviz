@@ -16,6 +16,9 @@ export default {
     NodeCard,
     ErrorNotification
   },
+  mounted() {
+    this.showGraph()
+  },
   setup: function () {
     const path = ref('/Users/ilyaromanov/Projects/platform-go/')
     const isInputsVisible = ref(true)

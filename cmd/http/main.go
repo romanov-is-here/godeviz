@@ -39,7 +39,7 @@ func waitForStop() {
 }
 
 func waitAndShow() {
-	time.Sleep(time.Second)
+	waitForPingAPI()
 	err := openBrowser("http://localhost:8080")
 	if err != nil {
 		log.Println("Open your browser at http://localhost:8080")
@@ -64,4 +64,20 @@ func openBrowser(url string) error {
 		return fmt.Errorf("cannot open browser on %s", runtime.GOOS)
 	}
 	return exec.Command(cmd, url).Start()
+}
+
+func waitForPingAPI() {
+	url := "http://localhost:8080/api/ping"
+	for {
+		resp, err := http.Get(url)
+		if err != nil {
+			continue
+		}
+
+		if resp.StatusCode == http.StatusOK {
+			break
+		}
+
+		time.Sleep(100 * time.Millisecond)
+	}
 }

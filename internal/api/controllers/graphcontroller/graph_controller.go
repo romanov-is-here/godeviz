@@ -9,17 +9,17 @@ import (
 	"github.com/romanov-is-here/godeviz/internal/graph/depgraph"
 )
 
-type graphController struct {
+type controller struct {
 	service *graphService
 }
 
-func SetupGraphController(r *mux.Router) {
-	c := graphController{service: &graphService{}}
+func Setup(r *mux.Router) {
+	c := controller{service: &graphService{}}
 
 	r.HandleFunc("/api/graph", c.GetGraph).Methods("GET")
 }
 
-func (c *graphController) GetGraph(w http.ResponseWriter, r *http.Request) {
+func (c *controller) GetGraph(w http.ResponseWriter, r *http.Request) {
 	path, ok := strFromQuery(w, r, "path", true)
 	if !ok {
 		return
