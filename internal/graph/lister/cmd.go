@@ -59,8 +59,6 @@ func (c *CommandLister) run(out *bytes.Buffer, arg ...string) error {
 
 func listPackages(run runFunc, path string) ([]gomodel.Package, error) {
 	var x []gomodel.Package
-	//data, err := execute(run, "list", "--json=ImportPath,Imports,Standard", "--deps", "all", path)
-	//data, err := execute(run, "list", "--json=ImportPath,Imports,Standard", "--deps", path)
 	data, err := execute(run, "list", "--json=ImportPath,Imports,Standard", "--deps", "./...")
 	if err != nil {
 		return nil, err
