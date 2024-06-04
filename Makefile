@@ -9,6 +9,5 @@ build-ui:
 
 .PHONY: serve
 serve:
-	open http://localhost:8080
 	go run ./cmd/http
 
