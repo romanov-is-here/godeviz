@@ -20,7 +20,7 @@ export default {
     this.showGraph()
   },
   setup: function () {
-    const path = ref('/Users/ilyaromanov/Projects/platform-go/')
+    const path = ref('.')
     const isInputsVisible = ref(true)
     const isLoaderVisible = ref(false)
     const isGraphVisible = ref(false)

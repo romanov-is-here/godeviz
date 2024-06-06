@@ -7,8 +7,6 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"os/exec"
-	"runtime"
 	"time"
 
 	"git.dev.cloud.mts.ru/mws/devp/platform-go/pkg/cmdtool"
@@ -62,34 +60,20 @@ func (r *showMeRunner) waitForStop(ctx context.Context) {
 }
 
 func (r *showMeRunner) waitAndShow(ctx context.Context) {
+	addr := fmt.Sprintf("http://localhost:%d", r.port)
 	r.waitForPingAPI()
-	err := r.openBrowser("http://localhost:8080")
+	err := open(addr)
 	if err != nil {
-		zapctx.Info(ctx, "Open your browser at http://localhost:8080")
+		zapctx.Info(ctx, "Open your browser", zap.String("address", addr))
 	}
 }
 
 func (r *showMeRunner) run() {
-	log.Fatal(http.ListenAndServe(":8080", nil))
-}
-
-func (r *showMeRunner) openBrowser(url string) error {
-	var cmd string
-	switch runtime.GOOS {
-	case "linux":
-		cmd = "xdg-open"
-	case "windows":
-		cmd = "cmd /c start"
-	case "darwin":
-		cmd = "open"
-	default:
-		return fmt.Errorf("cannot open browser on %s", runtime.GOOS)
-	}
-	return exec.Command(cmd, url).Start()
+	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", r.port), nil))
 }
 
 func (r *showMeRunner) waitForPingAPI() {
-	url := "http://localhost:8080/api/ping"
+	url := fmt.Sprintf("%s/api/ping", r.address())
 	for {
 		resp, err := http.Get(url)
 		if err != nil {
@@ -102,4 +86,8 @@ func (r *showMeRunner) waitForPingAPI() {
 
 		time.Sleep(100 * time.Millisecond)
 	}
+}
+
+func (r *showMeRunner) address() string {
+	return fmt.Sprintf("http://localhost:%d", r.port)
 }

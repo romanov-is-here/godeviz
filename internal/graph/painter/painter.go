@@ -9,7 +9,7 @@ import (
 	"github.com/romanov-is-here/godeviz/internal/graph/depgraph"
 )
 
-func Graphviz(gr *depgraph.DepGraph) error {
+func Graphviz(gr *depgraph.DepGraph, output string) error {
 	g := graphviz.New()
 	graph, err := g.Graph()
 	if err != nil {
@@ -52,8 +52,8 @@ func Graphviz(gr *depgraph.DepGraph) error {
 		}
 	}
 
-	if err := g.RenderFilename(graph, graphviz.SVG, "./graph.svg"); err != nil {
-		log.Fatal(err)
+	if err2 := g.RenderFilename(graph, graphviz.SVG, output); err2 != nil {
+		log.Fatal(err2)
 	}
 	return nil
 }
