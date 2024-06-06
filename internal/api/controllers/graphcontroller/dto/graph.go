@@ -17,8 +17,9 @@ type Edge struct {
 }
 
 type Graph struct {
-	Nodes map[string]*Node `json:"nodes"`
-	Edges map[string]*Edge `json:"edges"`
+	Nodes      map[string]*Node `json:"nodes"`
+	Edges      map[string]*Edge `json:"edges"`
+	ModuleName string           `json:"moduleName"`
 }
 
 type Import struct {

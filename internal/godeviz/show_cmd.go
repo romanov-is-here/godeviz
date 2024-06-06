@@ -29,16 +29,18 @@ func ShowCMD() cmdtool.Command {
 
 type showMeRunner struct {
 	port int
+	path string
 }
 
 func (r *showMeRunner) BindFlags(fs cmdtool.FlagSet) {
 	fs.IntVar(&r.port, "port", 8080, "port to run http listener on")
+	fs.StringVar(&r.path, "path", ".", "path to the project")
 }
 
 func (r *showMeRunner) Run(ctx context.Context, _ []string) error {
 	router := mux.NewRouter()
 
-	api.Setup(router)
+	api.Setup(router, r.path)
 	vueapp.Setup(router)
 
 	go r.run()

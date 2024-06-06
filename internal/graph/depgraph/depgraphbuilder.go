@@ -59,7 +59,8 @@ func (b *Builder) Build() *DepGraph {
 	b.applyFilter()
 	b.collectHits()
 	g := &DepGraph{
-		Packs: make(map[string]*Package),
+		Packs:      make(map[string]*Package),
+		ModuleName: b.localPrefix,
 	}
 
 	for k, v := range b.packs {

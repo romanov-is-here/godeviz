@@ -20,27 +20,18 @@ export default {
     this.showGraph()
   },
   setup: function () {
-    const path = ref('.')
-    const isInputsVisible = ref(true)
     const isLoaderVisible = ref(false)
     const isGraphVisible = ref(false)
     const selectedNodes = ref([])
     const selectedNode = ref()
     const errorMessage = ref('')
 
-    const data = reactive({nodes : {}, edges:{}})
+    const data = reactive({nodes : {}, edges:{}, moduleName: "loading"})
     const layouts = ref({})
 
     const showGraph = () => {
-      isInputsVisible.value = false
       isLoaderVisible.value = true
       fetchGraph()
-    };
-
-    const reset = () => {
-      isLoaderVisible.value = false
-      isGraphVisible.value = false
-      isInputsVisible.value = true
     };
 
     const onFilterChanged = function (){
@@ -62,7 +53,6 @@ export default {
         }
         const response = await axios.get('/api/graph', {
           params: {
-            path: encodeURIComponent(path.value),
             show_standard : filter.showStandard,
             show_platform : filter.showPlatform,
             show_outer : filter.showOuter,
@@ -74,6 +64,7 @@ export default {
 
         data.nodes = response.data.nodes
         data.edges = response.data.edges
+        data.moduleName = response.data.moduleName
         isGraphVisible.value = true
       } catch (error) {
         showErrorNotification("Cannot fetch graph: "+ error.message)
@@ -276,12 +267,9 @@ export default {
     })
 
     return {
-      path,
-      isInputsVisible,
       isLoaderVisible,
       isGraphVisible,
       showGraph,
-      reset,
       data,
       layouts,
       configs,
@@ -311,11 +299,10 @@ export default {
 <template>
   <ErrorNotification :error-message="errorMessage" />
   <div class="header">
-    <div v-if="!isInputsVisible">
+    <div v-if="isGraphVisible">
       <div>
         <h5>
-          Dependency graph for: {{path}}
-          <button type="button" class="btn btn-danger control-btn" @click="reset">Reset</button>
+          Dependency graph for: {{data.moduleName}}
         </h5>
       </div>
     </div>
@@ -334,16 +321,6 @@ export default {
             :selectedNode = "selectedNode"
             @focus-request = "onFilterChanged"/>
       </div>
-    </div>
-
-    <div v-if="isInputsVisible" class="centered-div"> <!-- TODO separate component or page for entering path-->
-      <div class="alert alert-success" role="alert">
-        Enter a path to the package:
-      </div>
-
-      <input v-model="path" type="text" class="form-control" placeholder="Your path here" aria-label="Path">
-
-      <button type="button" class="btn btn-primary show-btn" @click="showGraph">Show graph</button>
     </div>
 
     <Transition>
@@ -414,9 +391,6 @@ export default {
 .centered-div {
   width: 500px;
   margin: 0 auto;
-}
-.show-btn {
-  margin: 16px
 }
 .filter-zone {
   float: left;

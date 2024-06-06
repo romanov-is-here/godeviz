@@ -11,26 +11,25 @@ import (
 
 type controller struct {
 	service *graphService
+	path    string
 }
 
-func Setup(r *mux.Router) {
-	c := controller{service: &graphService{}}
+func Setup(r *mux.Router, path string) {
+	c := controller{
+		service: &graphService{},
+		path:    path,
+	}
 
 	r.HandleFunc("/api/graph", c.GetGraph).Methods("GET")
 }
 
 func (c *controller) GetGraph(w http.ResponseWriter, r *http.Request) {
-	path, ok := strFromQuery(w, r, "path", true)
-	if !ok {
-		return
-	}
-
 	filter, ok := getFilter(w, r)
 	if !ok {
 		return
 	}
 
-	outGraph, err := c.service.getGraph(path, filter)
+	outGraph, err := c.service.getGraph(c.path, filter)
 
 	if err != nil {
 		http.Error(w, "Failed to make a graph", http.StatusBadRequest)

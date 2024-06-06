@@ -13,7 +13,8 @@ type Package struct {
 }
 
 type DepGraph struct {
-	Packs map[string]*Package
+	Packs      map[string]*Package
+	ModuleName string
 }
 
 type Import struct {

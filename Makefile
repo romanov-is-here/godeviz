@@ -1,6 +1,5 @@
 .PHONY: run
 run: build-ui
-	open http://localhost:8080
 	go run ./cmd/godeviz show
 
 .PHONY: build-ui

@@ -9,10 +9,10 @@ import (
 	"github.com/romanov-is-here/godeviz/internal/api/controllers/pingcontroller"
 )
 
-func Setup(r *mux.Router) {
+func Setup(r *mux.Router, path string) {
 	r.HandleFunc("/api/hello", getHello).Methods("GET")
 
-	graphcontroller.Setup(r)
+	graphcontroller.Setup(r, path)
 	pingcontroller.Setup(r)
 }
 

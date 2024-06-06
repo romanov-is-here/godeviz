@@ -18,8 +18,9 @@ func (s *graphService) getGraph(path string, filter *depgraph.Filter) (*dto.Grap
 	}
 
 	outGraph := dto.Graph{
-		Nodes: make(map[string]*dto.Node),
-		Edges: make(map[string]*dto.Edge),
+		Nodes:      make(map[string]*dto.Node),
+		Edges:      make(map[string]*dto.Edge),
+		ModuleName: g.ModuleName,
 	}
 
 	// Collect nodes

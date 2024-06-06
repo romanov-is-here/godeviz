@@ -25,14 +25,16 @@ func GraphvizCMD() cmdtool.Command {
 
 type graphvizRunner struct {
 	output string
+	path   string
 }
 
 func (r *graphvizRunner) BindFlags(fs cmdtool.FlagSet) {
 	fs.StringVar(&r.output, "output", "graph.svg", "output file path")
+	fs.StringVar(&r.path, "path", ".", "path to the project")
 }
 
 func (r *graphvizRunner) Run(ctx context.Context, _ []string) error {
-	err, g := lister.GetGraph(".", depgraph.NewDefaultFilter())
+	err, g := lister.GetGraph(r.path, depgraph.NewDefaultFilter())
 	if err != nil {
 		return fmt.Errorf("failed to make a graph: %w", err)
 	}
