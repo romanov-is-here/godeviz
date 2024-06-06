@@ -308,14 +308,14 @@ export default {
     </div>
 
     <div v-if="isGraphVisible">
-      <div class="filter-zone">
+      <div class="filter-zone boxed">
         <FilterBar
             :filter = "filter"
             @filter-changed = "onFilterChanged"
         />
       </div>
 
-      <div v-if="selectedNode" class="node-card">
+      <div v-if="selectedNode" class="node-card boxed">
         <NodeCard
             :focusFilter = "focusFilter"
             :selectedNode = "selectedNode"
@@ -332,7 +332,7 @@ export default {
     </Transition>
   </div>
   <div v-if="isGraphVisible" class="tooltip-wrapper">
-    <div class="graph-zone">
+    <div class="graph-zone boxed">
       <VNetworkGraph
           class="graph"
           ref="graph"
@@ -388,6 +388,10 @@ export default {
 </template>
 
 <style scoped>
+.boxed {
+  border-radius: 5px;
+  box-shadow: inset 0 0 1px rgba(0, 0, 0, 1);
+}
 .loader {
   width: 500px;
   height: 50px;
@@ -400,8 +404,6 @@ export default {
 }
 .filter-zone {
   float: left;
-  border-radius: 5px;
-  box-shadow: inset 0 0 1px rgba(0, 0, 0, 0.8);
   width: 200px;
   height: 145px;
   margin: 0 5px 0 0;
@@ -410,15 +412,11 @@ export default {
   width: calc(100% - 225px); /* width - around filter width */
   height: 145px;
   float:left;
-  border-radius: 5px;
-  box-shadow: inset 0 0 1px rgba(0, 0, 0, 0.8);
 }
 .graph-zone {
   height: calc(100vh - 200px);
   width: calc(100% - 20px);
   margin: 0 10px;
-  border-radius: 5px;
-  box-shadow: inset 0 0 1px rgba(0, 0, 0, 0.8);
 }
 .tooltip-wrapper {
   position: relative;
