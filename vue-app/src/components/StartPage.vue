@@ -324,7 +324,7 @@ export default {
     </div>
 
     <Transition>
-      <div v-if="isLoaderVisible" class="centered-div loader" v-bind:class="{ 'fade-enter': isLoaderVisible, 'fade-leave-to': !isLoaderVisible }">
+      <div v-if="isLoaderVisible" class="loader" v-bind:class="{ 'fade-enter': isLoaderVisible, 'fade-leave-to': !isLoaderVisible }">
         <div class="alert alert-success" role="alert">
           Loading data
         </div>
@@ -388,34 +388,37 @@ export default {
 </template>
 
 <style scoped>
-.centered-div {
+.loader {
   width: 500px;
+  height: 50px;
   margin: 0 auto;
+}
+.header {
+  height: 185px;
+  width: 100%;
+  margin: 0 10px;
 }
 .filter-zone {
   float: left;
-  border: 3px solid gray;
-  border-radius: 10px;
+  border-radius: 5px;
+  box-shadow: inset 0 0 1px rgba(0, 0, 0, 0.8);
   width: 200px;
-  margin: 10px;
+  height: 145px;
+  margin: 0 5px 0 0;
 }
 .node-card {
-  width: calc(100% - 240px); /* width - around filter width */
+  width: calc(100% - 225px); /* width - around filter width */
+  height: 145px;
   float:left;
-  border: 3px solid gray;
-  border-radius: 10px;
-  margin: 10px;
+  border-radius: 5px;
+  box-shadow: inset 0 0 1px rgba(0, 0, 0, 0.8);
 }
 .graph-zone {
-  height: calc(100vh - 300px);
+  height: calc(100vh - 200px);
   width: calc(100% - 20px);
-  border: 3px solid gray;
-  border-radius: 10px;
-  margin: 10px;
-}
-.header {
-  height: 240px;
-  width: 100%;
+  margin: 0 10px;
+  border-radius: 5px;
+  box-shadow: inset 0 0 1px rgba(0, 0, 0, 0.8);
 }
 .tooltip-wrapper {
   position: relative;
@@ -456,9 +459,7 @@ export default {
   transition: opacity 0.2s linear;
   pointer-events: none;
 }
-.control-btn {
-  margin: 5px;
-}
+
 .v-enter-active,
 .v-leave-active {
   transition: opacity 0.5s ease;

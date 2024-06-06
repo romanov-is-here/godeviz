@@ -23,22 +23,22 @@ export default {
     <form>
       <div class="form-check form-switch">
         <input class="form-check-input" type="checkbox" v-model="filterLocal.showStandard" id="showStandard">
-        <label class="form-check-label" for="showStandard">Show standard</label>
+        <label class="form-check-label" for="showStandard">Standard</label>
       </div>
 
       <div class="form-check form-switch">
         <input class="form-check-input" type="checkbox" v-model="filterLocal.showPlatform" id="showPlatform">
-        <label class="form-check-label" for="showPlatform">Show platform</label>
+        <label class="form-check-label" for="showPlatform">Platform</label>
       </div>
 
       <div class="form-check form-switch">
         <input class="form-check-input" type="checkbox" v-model="filterLocal.showOuter" id="showOuter">
-        <label class="form-check-label" for="showOuter">Show outer</label>
+        <label class="form-check-label" for="showOuter">Outer</label>
       </div>
 
       <div class="form-check form-switch">
         <input class="form-check-input" type="checkbox" v-model="filterLocal.showRatio" id="showRatio">
-        <label class="form-check-label" for="showRatio">Show ratio</label>
+        <label class="form-check-label" for="showRatio">Ratio</label>
       </div>
     </form>
   </div>
